@@ -1,3 +1,7 @@
 Flask==3.0.0
-openai>=1.65.2,<2.0.0
 requests==2.31.0
+langchain
+langchain-core
+langchain-openai
+langchain-anthropic
+langchain-google-genai

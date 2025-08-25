@@ -1,101 +1,89 @@
 # test_client.py
-import json
-import requests
 import sys
-from openai import OpenAI
+import os
+import inspect # To dynamically find tools
+from langchain.agents import AgentExecutor, create_tool_calling_agent
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.tools import BaseTool
+from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
+from langchain_google_genai import ChatGoogleGenerativeAI
 
-# Initialize the OpenAI client
-client = OpenAI()
+# Import the tools module itself, not the individual functions
+import tools as tool_module
 
-# 1. Load the tool definitions
-try:
-    with open('tool.json', 'r') as f:
-        tools = json.load(f)
-except FileNotFoundError:
-    print("Error: tool.json not found. Make sure it's in the same directory.")
-    sys.exit(1)
+def get_llm(provider="openai"):
+    """Initializes and returns the appropriate LLM based on the provider."""
+    if provider == "anthropic":
+        # Ensure your ANTHROPIC_API_KEY is set in your environment
+        print("Using Anthropic (Claude)...")
+        return ChatAnthropic(model="claude-3-sonnet-20240229")
+    elif provider == "google":
+        # Ensure your GOOGLE_API_KEY is set in your environment
+        print("Using Google (Gemini)...")
+        return ChatGoogleGenerativeAI(model="gemini-pro")
+    else:
+        # Default to OpenAI, ensures OPENAI_API_KEY is set
+        print("Using OpenAI (GPT-4)...")
+        return ChatOpenAI(model="gpt-4")
 
-# --- Display the available tools ---
-tool_names = [tool['function']['name'] for tool in tools]
-print(f"Available tools: {', '.join(tool_names)}")
-# ------------------------------------
+def main():
+    """Main function to run the LangChain agent."""
+    # --- 1. Setup: Dynamically discover tools ---
+    available_tools = [
+        obj for name, obj in inspect.getmembers(tool_module) 
+        if isinstance(obj, BaseTool)
+    ]
+    
+    if not available_tools:
+        print("No tools found in tools.py. Make sure they are decorated with @tool.")
+        sys.exit(1)
 
-# 2. Get the prompt from the command-line argument
-if len(sys.argv) > 1:
-    user_prompt = sys.argv[1]
-else:
-    # If no argument is provided, print usage instructions and use a default prompt
-    print("Usage: python test_client.py \"<Your question for the LLM>\"")
-    user_prompt = "Can you list the projects available in my 10x account?"
-    print(f"\nNo prompt provided. Using default: '{user_prompt}'")
+    tool_names = [tool.name for tool in available_tools]
+    print(f"Available tools: {', '.join(tool_names)}")
 
+    # --- 2. Get User Input ---
+    if len(sys.argv) > 2:
+        provider = sys.argv[1].lower()
+        user_prompt = sys.argv[2]
+    elif len(sys.argv) > 1:
+        # If only one argument, it's the prompt, use default provider
+        provider = "openai"
+        user_prompt = sys.argv[1]
+    else:
+        print("Usage: python test_client.py [openai|anthropic|google] \"<Your question>\"")
+        provider = "openai"
+        user_prompt = "Can you list the projects available in my 10x account?"
+        print(f"\nNo prompt provided. Using default: '{user_prompt}'")
 
-messages = [{"role": "user", "content": user_prompt}]
-print(f"\nSending prompt to OpenAI: \"{user_prompt}\"")
-
-# --- Start the conversation loop ---
-while True:
-    # 3. Make an API call to OpenAI
+    # --- 3. Create the Agent ---
     try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=messages,
-            tools=tools,
-            tool_choice="auto",
-        )
-        response_message = response.choices[0].message
-        tool_calls = response_message.tool_calls
-
-        # 4. Check if the model wants to call a tool
-        if tool_calls:
-            print("OpenAI model decided to call a tool.")
-            # Append the assistant's response to the message history
-            messages.append(response_message)
-            
-            # 5. Execute the tool call and get the result
-            for tool_call in tool_calls:
-                function_name = tool_call.function.name
-                function_args = json.loads(tool_call.function.arguments)
-
-                print(f"Tool: {function_name}, Arguments: {function_args}")
-
-                mcp_server_url = "http://127.0.0.1:5001/"
-                mcp_payload = {"tool_name": function_name, "parameters": function_args}
-                
-                print(f"Sending request to local MCP server...")
-                mcp_response = requests.post(mcp_server_url, json=mcp_payload)
-                mcp_response.raise_for_status()
-                function_response = mcp_response.json()["content"]
-
-                print("\n--- Response from MCP Server ---")
-                print(function_response)
-                print("--------------------------------")
-
-                # 6. Append the tool's result to the message history
-                messages.append(
-                    {
-                        "tool_call_id": tool_call.id,
-                        "role": "tool",
-                        "name": function_name,
-                        "content": function_response,
-                    }
-                )
-            
-            # Go back to the start of the loop to send the tool's output
-            # back to the model for the next step.
-            print("\nSending tool results back to OpenAI for final answer...")
-            continue
-
-        # 7. If there are no more tool calls, print the final answer and exit
-        else:
-            print("\n--- Final Answer from OpenAI ---")
-            print(response_message.content)
-            print("----------------------------------")
-            break
-
-    except requests.exceptions.RequestException as e:
-        print(f"\nError calling MCP server: {e}")
-        break
+        llm = get_llm(provider)
     except Exception as e:
-        print(f"An error occurred during the OpenAI API call: {e}")
-        break
+        print(f"Error initializing LLM. Make sure your API key for '{provider}' is set.")
+        print(e)
+        sys.exit(1)
+
+    # Create the prompt template
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", "You are a helpful assistant that can interact with the 10x Genomics Cloud CLI."),
+        ("human", "{input}"),
+        ("placeholder", "{agent_scratchpad}"),
+    ])
+
+    # Create the agent itself
+    agent = create_tool_calling_agent(llm, available_tools, prompt)
+    agent_executor = AgentExecutor(agent=agent, tools=available_tools, verbose=True)
+
+    # --- 4. Run the Agent ---
+    print(f"\nSending prompt: \"{user_prompt}\"")
+    try:
+        response = agent_executor.invoke({"input": user_prompt})
+        print("\n--- Final Answer ---")
+        print(response["output"])
+        print("--------------------")
+    except Exception as e:
+        print(f"\nAn error occurred while running the agent: {e}")
+
+if __name__ == "__main__":
+    main()
