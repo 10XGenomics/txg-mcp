@@ -1,76 +1,101 @@
 # test_client.py
 import json
 import requests
+import sys
 from openai import OpenAI
 
 # Initialize the OpenAI client
-# It will automatically pick up the OPENAI_API_KEY from your environment
 client = OpenAI()
 
-# 1. Load the tool definitions from your tool.json file
-# The new format is a simple list, so we don't need to access a "tools" key.
-with open('tool.json', 'r') as f:
-    tools = json.load(f)
-
-# 2. Define the user's prompt
-messages = [
-    {"role": "user", "content": "Can you list the projects available in my 10x account?"}
-    # Try other prompts too!
-    # "What are the runs for project 'project-123'?"
-    # "Get me the details for run 'run-abc-456'"
-]
-
-print("Sending prompt to OpenAI...")
-
-# 3. Make the first API call to OpenAI
+# 1. Load the tool definitions
 try:
-    response = client.chat.completions.create(
-        model="gpt-4",
-        messages=messages,
-        tools=tools,
-        tool_choice="auto",
-    )
+    with open('tool.json', 'r') as f:
+        tools = json.load(f)
+except FileNotFoundError:
+    print("Error: tool.json not found. Make sure it's in the same directory.")
+    sys.exit(1)
 
-    response_message = response.choices[0].message
-    tool_calls = response_message.tool_calls
+# --- Display the available tools ---
+tool_names = [tool['function']['name'] for tool in tools]
+print(f"Available tools: {', '.join(tool_names)}")
+# ------------------------------------
 
-    # 4. Check if the model wants to call a tool
-    if tool_calls:
-        print("OpenAI model decided to call a tool.")
-        
-        # For this example, we'll just handle the first tool call
-        tool_call = tool_calls[0]
-        function_name = tool_call.function.name
-        function_args = json.loads(tool_call.function.arguments)
+# 2. Get the prompt from the command-line argument
+if len(sys.argv) > 1:
+    user_prompt = sys.argv[1]
+else:
+    # If no argument is provided, print usage instructions and use a default prompt
+    print("Usage: python test_client.py \"<Your question for the LLM>\"")
+    user_prompt = "Can you list the projects available in my 10x account?"
+    print(f"\nNo prompt provided. Using default: '{user_prompt}'")
 
-        print(f"Tool: {function_name}")
-        print(f"Arguments: {function_args}")
 
-        # 5. Call your local MCP server
-        mcp_server_url = "http://127.0.0.1:5001/"
-        mcp_payload = {
-            "tool_name": function_name,
-            "parameters": function_args
-        }
-        
-        print(f"\nSending request to local MCP server at {mcp_server_url}...")
-        
-        try:
-            mcp_response = requests.post(mcp_server_url, json=mcp_payload)
-            mcp_response.raise_for_status() # Raise an exception for bad status codes
+messages = [{"role": "user", "content": user_prompt}]
+print(f"\nSending prompt to OpenAI: \"{user_prompt}\"")
+
+# --- Start the conversation loop ---
+while True:
+    # 3. Make an API call to OpenAI
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=messages,
+            tools=tools,
+            tool_choice="auto",
+        )
+        response_message = response.choices[0].message
+        tool_calls = response_message.tool_calls
+
+        # 4. Check if the model wants to call a tool
+        if tool_calls:
+            print("OpenAI model decided to call a tool.")
+            # Append the assistant's response to the message history
+            messages.append(response_message)
             
-            # 6. Print the result from your server
-            print("\n--- Response from MCP Server ---")
-            # Use .json() to parse the JSON response and then re-format it for pretty printing
-            print(json.dumps(mcp_response.json(), indent=2))
-            print("--------------------------------")
+            # 5. Execute the tool call and get the result
+            for tool_call in tool_calls:
+                function_name = tool_call.function.name
+                function_args = json.loads(tool_call.function.arguments)
 
-        except requests.exceptions.RequestException as e:
-            print(f"\nError calling MCP server: {e}")
+                print(f"Tool: {function_name}, Arguments: {function_args}")
 
-    else:
-        print("OpenAI model responded without a tool call.")
-        print(response_message.content)
+                mcp_server_url = "http://127.0.0.1:5001/"
+                mcp_payload = {"tool_name": function_name, "parameters": function_args}
+                
+                print(f"Sending request to local MCP server...")
+                mcp_response = requests.post(mcp_server_url, json=mcp_payload)
+                mcp_response.raise_for_status()
+                function_response = mcp_response.json()["content"]
 
-except Exception as e:
-    print(f"An error occurred during the OpenAI API call: {e}")
+                print("\n--- Response from MCP Server ---")
+                print(function_response)
+                print("--------------------------------")
+
+                # 6. Append the tool's result to the message history
+                messages.append(
+                    {
+                        "tool_call_id": tool_call.id,
+                        "role": "tool",
+                        "name": function_name,
+                        "content": function_response,
+                    }
+                )
+            
+            # Go back to the start of the loop to send the tool's output
+            # back to the model for the next step.
+            print("\nSending tool results back to OpenAI for final answer...")
+            continue
+
+        # 7. If there are no more tool calls, print the final answer and exit
+        else:
+            print("\n--- Final Answer from OpenAI ---")
+            print(response_message.content)
+            print("----------------------------------")
+            break
+
+    except requests.exceptions.RequestException as e:
+        print(f"\nError calling MCP server: {e}")
+        break
+    except Exception as e:
+        print(f"An error occurred during the OpenAI API call: {e}")
+        break
