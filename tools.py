@@ -114,11 +114,6 @@ def get_reference(reference_id: str) -> str:
     return call_mcp_server(["references", "get", reference_id])
 
 @tool
-def delete_reference(reference_id: str) -> str:
-    """Deletes a custom reference."""
-    return call_mcp_server(["references", "delete", reference_id])
-
-@tool
 def update_reference(reference_id: str, name: Optional[str] = None, description: Optional[str] = None) -> str:
     """Updates the name and/or description for a custom reference."""
     command = ["references", "update", reference_id]
