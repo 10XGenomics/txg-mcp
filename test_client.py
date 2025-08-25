@@ -64,9 +64,14 @@ def main():
         print(e)
         sys.exit(1)
 
-    # Create the prompt template
+    # Create the prompt template with updated instructions
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a helpful assistant that can interact with the 10x Genomics Cloud CLI."),
+        ("system", 
+         "You are a helpful assistant that can interact with the 10x Genomics Cloud CLI. "
+         "IMPORTANT: When a user asks for a 'human reference transcriptome', you MUST use the exact string 'refdata-cellranger-GRCh38-2024-A' for the 'transcriptome' parameter in the 'create_cellranger_count_analysis' tool. This is a pre-built reference and does not need to be uploaded. "
+         "Also, you do not need to use the 'upload_fastqs' tool before running a 'create_cellranger_count_analysis'; the analysis tool will handle the upload automatically. "
+         "If you do not have enough information to use a tool (like a project name, file path, etc.), "
+         "you MUST use the 'ask_user_for_input' tool to ask a clarifying question before proceeding."),
         ("human", "{input}"),
         ("placeholder", "{agent_scratchpad}"),
     ])
