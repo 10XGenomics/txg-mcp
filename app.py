@@ -7,18 +7,22 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# --- IMPORTANT ---
+# Use the absolute path to the txg executable to avoid PATH issues.
+TXG_EXECUTABLE = "/users/evan.winget/txg-macos-v3.0.0/txg"
+
 def run_txg_command(command_parts):
     """
     Executes a TXG command securely using subprocess.
     Args:
         command_parts (list): A list of strings representing the command and its arguments.
-                                e.g., ['txg', 'runs', 'list']
+                                e.g., ['/path/to/txg', 'runs', 'list']
     Returns:
         A tuple containing stdout, stderr, and the return code.
     """
     try:
-        # Execute the command.  captures stdout/stderr.
-        #  decodes them as text.  prevents raising an
+        # Execute the command. `capture_output=True` captures stdout/stderr.
+        # `text=True` decodes them as text. `check=False` prevents raising an
         # exception on non-zero exit codes, so we can handle errors gracefully.
         result = subprocess.run(
             command_parts,
@@ -28,8 +32,8 @@ def run_txg_command(command_parts):
         )
         return result.stdout, result.stderr, result.returncode
     except FileNotFoundError:
-        # This error occurs if the 'txg' command is not found in the system's PATH.
-        return None, "Error: 'txg' command not found. Is the TXG CLI installed and in your PATH?", 1
+        # This error occurs if the executable is not found at the specified path.
+        return None, f"Error: '{TXG_EXECUTABLE}' not found. Is the path correct?", 1
     except Exception as e:
         return None, f"An unexpected error occurred: {str(e)}", 1
 
@@ -46,10 +50,10 @@ def handle_mcp_request():
     
     # --- Route the tool_name to the appropriate TXG command ---
     if tool_name == 'list_projects':
-        command = ['txg', 'projects', 'list', '--output-format=json']
+        command = [TXG_EXECUTABLE, 'projects', 'list']
 
     elif tool_name == 'list_runs':
-        command = ['txg', 'runs', 'list', '--output-format=json']
+        command = [TXG_EXECUTABLE, 'runs', 'list']
         # Add optional project-id filter if provided
         project_id = parameters.get('project_id')
         if project_id:
@@ -61,7 +65,7 @@ def handle_mcp_request():
             return jsonify({
                 "error": "Missing required parameter: run_id"
             }), 400
-        command = ['txg', 'runs', 'get', run_id, '--output-format=json']
+        command = [TXG_EXECUTABLE, 'runs', 'get', run_id]
 
     else:
         return jsonify({
