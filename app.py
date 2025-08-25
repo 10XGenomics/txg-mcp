@@ -16,14 +16,11 @@ def run_txg_command(command_parts):
     Executes a TXG command securely using subprocess.
     Args:
         command_parts (list): A list of strings representing the command and its arguments.
-                                e.g., ['/path/to/txg', 'runs', 'list']
+                                e.g., ['/path/to/txg', 'projects', 'list']
     Returns:
         A tuple containing stdout, stderr, and the return code.
     """
     try:
-        # Execute the command. `capture_output=True` captures stdout/stderr.
-        # `text=True` decodes them as text. `check=False` prevents raising an
-        # exception on non-zero exit codes, so we can handle errors gracefully.
         result = subprocess.run(
             command_parts,
             capture_output=True,
@@ -32,57 +29,33 @@ def run_txg_command(command_parts):
         )
         return result.stdout, result.stderr, result.returncode
     except FileNotFoundError:
-        # This error occurs if the executable is not found at the specified path.
         return None, f"Error: '{TXG_EXECUTABLE}' not found. Is the path correct?", 1
     except Exception as e:
         return None, f"An unexpected error occurred: {str(e)}", 1
 
-@app.route('/', methods=['POST'])
-def handle_mcp_request():
+# --- Updated Endpoint ---
+# This new route matches the URL being called from your tools.py file.
+@app.route('/run_command', methods=['POST'])
+def handle_run_command():
     """
-    Main endpoint for handling MCP requests.
+    Receives a command list, executes it, and returns the result.
     """
     data = request.get_json()
-    tool_name = data.get('tool_name')
-    parameters = data.get('parameters', {})
+    command_from_client = data.get('command')
 
-    command = []
+    if not command_from_client or not isinstance(command_from_client, list):
+        return jsonify({"error": "Invalid or missing 'command' in request payload."}), 400
+
+    # Prepend the executable path to the command from the client
+    full_command = [TXG_EXECUTABLE] + command_from_client
     
-    # --- Route the tool_name to the appropriate TXG command ---
-    if tool_name == 'list_projects':
-        command = [TXG_EXECUTABLE, 'projects', 'list']
-
-    elif tool_name == 'list_runs':
-        command = [TXG_EXECUTABLE, 'runs', 'list']
-        # Add optional project-id filter if provided
-        project_id = parameters.get('project_id')
-        if project_id:
-            command.extend(['--project-id', project_id])
-
-    elif tool_name == 'get_run':
-        run_id = parameters.get('run_id')
-        if not run_id:
-            return jsonify({
-                "error": "Missing required parameter: run_id"
-            }), 400
-        command = [TXG_EXECUTABLE, 'runs', 'get', run_id]
-
-    else:
-        return jsonify({
-            "error": f"Unknown tool_name: {tool_name}"
-        }), 404
-
-    # --- Execute the command and format the response ---
-    stdout, stderr, returncode = run_txg_command(command)
+    stdout, stderr, returncode = run_txg_command(full_command)
 
     if returncode != 0:
-        # If the command failed, return the error from stderr
         content = f"Error executing command.\nExit Code: {returncode}\nError: {stderr}"
     else:
-        # On success, return the output from stdout
         content = stdout
 
-    # The MCP response format is a simple JSON object with a "content" key.
     response = {
         "content": content
     }
