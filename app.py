@@ -8,8 +8,8 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 # --- IMPORTANT ---
-# Use the absolute path to the txg executable to avoid PATH issues.
-TXG_EXECUTABLE = "/users/evan.winget/txg-macos-v3.0.0/txg"
+# Updated the path to a standard, trusted location for executables.
+TXG_EXECUTABLE = "/usr/local/bin/txg"
 
 def run_txg_command(command_parts):
     """
