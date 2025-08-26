@@ -101,7 +101,8 @@ def create_cellranger_aggr_analysis(
 @tool
 def list_analyses(project_id: str) -> str:
     """Lists all analyses in a specific project."""
-    return call_mcp_server(["analyses", "list", "--project-id", project_id])
+    # Corrected to use a positional argument instead of the --project-id flag.
+    return call_mcp_server(["analyses", "list", project_id])
 
 @tool
 def get_analysis_details(analysis_id: str) -> str:
