@@ -44,14 +44,16 @@ if [ -f icon.png ]; then
     cp icon.png build/
 fi
 
-# Update package.json in build to point to compiled JS
+# Update manifest.json in build to point to correct server path
 cd build
-# Update main field to point to compiled JS
+# Update server field in manifest to point to compiled JS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
+    sed -i '' 's|"server": "dist/server/index.js"|"server": "server/index.js"|' manifest.json
     sed -i '' 's|"main": "dist/server/index.js"|"main": "server/index.js"|' package.json
 else
     # Linux
+    sed -i 's|"server": "dist/server/index.js"|"server": "server/index.js"|' manifest.json
     sed -i 's|"main": "dist/server/index.js"|"main": "server/index.js"|' package.json
 fi
 cd ..

@@ -219,20 +219,3 @@ export interface ExecutionResult {
   exitCode: number;
 }
 
-// MCP types (extending SDK types for better typing)
-export interface McpToolResponse {
-  content: Array<{
-    type: 'text';
-    text: string;
-  }>;
-}
-
-export interface McpToolDefinition {
-  name: string;
-  description: string;
-  inputSchema: ToolInputSchema;
-}
-
-export interface McpListToolsResponse {
-  tools: McpToolDefinition[];
-}

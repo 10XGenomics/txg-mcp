@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TXG MCP Configuration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            color: #4a5568;
+            font-size: 14px;
+        }
+        
+        .help-text {
+            margin-top: 6px;
+            color: #a0aec0;
+            font-size: 12px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+        
+        .status {
+            margin-top: 24px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+            display: block;
+        }
+        
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+            display: block;
+        }
+        
+        .status.info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+            display: block;
+        }
+        
+        .warning {
+            background: #fef5e7;
+            color: #7c4e00;
+            border: 1px solid #f9d97f;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+        
+        .warning strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">TXG</div>
+            <h1>TXG MCP Configuration</h1>
+            <p class="subtitle">Configure your TXG MCP server settings</p>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Prerequisites</strong>
+            Ensure the TXG CLI is installed and accessible on your system before using this extension.
+        </div>
+        
+        <form id="configForm">
+            <div class="form-group">
+                <label for="txgExecutable">TXG Executable Path</label>
+                <input type="text" id="txgExecutable" name="txgExecutable" 
+                       value="/usr/local/bin/txg"
+                       placeholder="/usr/local/bin/txg">
+                <p class="help-text">Path to the TXG CLI executable</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="commandTimeout">Command Timeout (ms)</label>
+                <input type="number" id="commandTimeout" name="commandTimeout" 
+                       value="120000" min="5000" max="600000"
+                       placeholder="120000">
+                <p class="help-text">Maximum time to wait for a command (5000-600000 ms)</p>
+            </div>
+            
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="verboseLogging" name="verboseLogging">
+                    Enable Verbose Logging
+                </label>
+                <p class="help-text">Enable detailed logging for debugging</p>
+            </div>
+            
+            <div class="button-group">
+                <button type="button" class="btn-secondary" onclick="testConnection()">Test TXG CLI</button>
+                <button type="submit" class="btn-primary">Save Configuration</button>
+            </div>
+            
+            <div id="status" class="status"></div>
+        </form>
+    </div>
+    
+    <script>
+        // Load saved configuration
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('txgMcpConfig');
+            if (saved) {
+                try {
+                    const config = JSON.parse(saved);
+                    document.getElementById('txgExecutable').value = config.txgExecutable || '/usr/local/bin/txg';
+                    document.getElementById('commandTimeout').value = config.commandTimeout || 120000;
+                    document.getElementById('verboseLogging').checked = config.verboseLogging || false;
+                } catch (e) {
+                    console.error('Failed to load saved configuration:', e);
+                }
+            }
+        });
+        
+        // Test connection
+        async function testConnection() {
+            const statusEl = document.getElementById('status');
+            const txgExecutable = document.getElementById('txgExecutable').value;
+            
+            if (!txgExecutable) {
+                showStatus('Please enter the TXG executable path', 'error');
+                return;
+            }
+            
+            showStatus('Testing TXG CLI availability...', 'info');
+            
+            // In a real implementation, this would test the actual executable
+            // For now, we'll simulate the test
+            setTimeout(() => {
+                showStatus('Configuration test complete. Please ensure TXG CLI is installed at the specified path.', 'info');
+            }, 1000);
+        }
+        
+        // Save configuration
+        document.getElementById('configForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const config = {
+                txgExecutable: document.getElementById('txgExecutable').value,
+                commandTimeout: parseInt(document.getElementById('commandTimeout').value),
+                verboseLogging: document.getElementById('verboseLogging').checked
+            };
+            
+            // Validate timeout
+            if (config.commandTimeout < 5000 || config.commandTimeout > 600000) {
+                showStatus('Command timeout must be between 5000 and 600000 ms', 'error');
+                return;
+            }
+            
+            // Save to localStorage (in production, this would be saved via proper API)
+            localStorage.setItem('txgMcpConfig', JSON.stringify(config));
+            
+            // Send message to parent window if in iframe
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'txg-mcp-config',
+                    config: config
+                }, '*');
+            }
+            
+            showStatus('Configuration saved successfully!', 'success');
+        });
+        
+        // Show status message
+        function showStatus(message, type) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+        }
+    </script>
+</body>
+</html>

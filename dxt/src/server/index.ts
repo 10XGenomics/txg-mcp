@@ -5,8 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { 
   CallToolRequest,
   CallToolRequestSchema, 
-  ListToolsRequestSchema,
-  Tool as McpTool
+  ListToolsRequestSchema
 } from '@modelcontextprotocol/sdk/types.js';
 import { spawn, ChildProcess } from 'child_process';
 import {
@@ -15,12 +14,9 @@ import {
   AllowedCommand,
   Tool,
   ToolArguments,
-  TxgError,
   ValidationError,
   CommandNotAllowedError,
   ExecutionError,
-  McpToolResponse,
-  McpListToolsResponse,
   CreateCellrangerMultiArgs,
   CreateCellrangerCountArgs,
   CreateCellrangerAggrArgs,
@@ -41,10 +37,11 @@ import {
 } from '../types/index.js';
 
 // Configuration from environment variables with strong typing
+// DXT passes user config as DXT_CONFIG_<NAME> environment variables
 const CONFIG: Config = {
-  txgExecutable: process.env['TXG_EXECUTABLE'] ?? '/usr/local/bin/txg',
-  verboseLogging: process.env['VERBOSE_LOGGING'] === 'true',
-  commandTimeout: parseInt(process.env['COMMAND_TIMEOUT'] ?? '120000', 10)
+  txgExecutable: process.env['DXT_CONFIG_TXG_EXECUTABLE'] ?? process.env['TXG_EXECUTABLE'] ?? '/usr/local/bin/txg',
+  verboseLogging: process.env['DXT_CONFIG_VERBOSE_LOGGING'] === 'true' || process.env['VERBOSE_LOGGING'] === 'true',
+  commandTimeout: parseInt(process.env['DXT_CONFIG_COMMAND_TIMEOUT'] ?? process.env['COMMAND_TIMEOUT'] ?? '120000', 10)
 } as const;
 
 // Validate configuration
@@ -83,11 +80,6 @@ const ALLOWED_COMMANDS: ReadonlySet<AllowedCommand> = new Set<AllowedCommand>([
   'references.update',
   'references.upload'
 ]);
-
-// Type guard for allowed commands
-function isAllowedCommand(command: string): command is AllowedCommand {
-  return ALLOWED_COMMANDS.has(command as AllowedCommand);
-}
 
 // Validate command against allowlist with type safety
 function validateCommand(commandParts: readonly string[]): void {
@@ -572,19 +564,19 @@ const server = new Server(
   }
 );
 
-// Handle list tools request with proper typing
-server.setRequestHandler(ListToolsRequestSchema, async (): Promise<McpListToolsResponse> => {
+// Handle list tools request
+server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: TOOLS.map(tool => ({
       name: tool.name,
       description: tool.description,
-      inputSchema: tool.inputSchema
+      inputSchema: tool.inputSchema as unknown as Record<string, unknown>
     }))
   };
 });
 
-// Handle tool execution with proper typing
-server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest): Promise<McpToolResponse> => {
+// Handle tool execution
+server.setRequestHandler(CallToolRequestSchema, async (request: CallToolRequest) => {
   const { name, arguments: args } = request.params;
   
   log(`Executing tool: ${name}`, 'info');
