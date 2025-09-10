@@ -7,7 +7,10 @@
   "author": {
     "name": "TXG Team"
   },
-  "server": "dist/server/index.js",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/server/index.js"
+  },
   "user_config": {
     "txg_executable": {
       "type": "string",

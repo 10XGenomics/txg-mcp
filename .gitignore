@@ -1,2 +1,6 @@
 __pycache__/
 *.pyc
+dxt/txg-mcp/*
+dxt/txg-mcp copy/*
+dxt/txg-mcp.zip
+dxt/txg-mcp.dxt

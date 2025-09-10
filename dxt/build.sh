@@ -46,14 +46,14 @@ fi
 
 # Update manifest.json in build to point to correct server path
 cd build
-# Update server field in manifest to point to compiled JS
+# Update server paths in manifest to point to compiled JS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS
-    sed -i '' 's|"server": "dist/server/index.js"|"server": "server/index.js"|' manifest.json
+    sed -i '' 's|"entry_point": "dist/server/index.js"|"entry_point": "server/index.js"|' manifest.json
     sed -i '' 's|"main": "dist/server/index.js"|"main": "server/index.js"|' package.json
 else
     # Linux
-    sed -i 's|"server": "dist/server/index.js"|"server": "server/index.js"|' manifest.json
+    sed -i 's|"entry_point": "dist/server/index.js"|"entry_point": "server/index.js"|' manifest.json
     sed -i 's|"main": "dist/server/index.js"|"main": "server/index.js"|' package.json
 fi
 cd ..
