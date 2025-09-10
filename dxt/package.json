@@ -1,0 +1,43 @@
+{
+  "name": "txg-mcp",
+  "version": "2.0.0",
+  "description": "MCP server for accessing TXG CLI functionality through LLMs",
+  "type": "module",
+  "main": "dist/server/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node dist/server/index.js",
+    "dev": "tsx watch src/server/index.ts",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "postbuild": "npm run copy-assets",
+    "copy-assets": "cp -r src/ui dist/",
+    "test": "tsx src/test.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "txg",
+    "genomics",
+    "cell-ranger",
+    "10x"
+  ],
+  "author": "TXG Team",
+  "license": "MIT"
+}

@@ -1,0 +1,22 @@
+node_modules/
+*.log
+*.lock
+.DS_Store
+.env
+.env.local
+dist/
+build/
+*.mcpb
+package-lock.json
+yarn.lock
+
+# TypeScript
+*.tsbuildinfo
+*.map
+*.d.ts.map
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

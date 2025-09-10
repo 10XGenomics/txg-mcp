@@ -1,0 +1,163 @@
+{
+  "manifest_version": "0.1",
+  "name": "txg-mcp",
+  "display_name": "TXG MCP Server",
+  "version": "2.0.0",
+  "description": "MCP server for accessing TXG CLI functionality through LLMs",
+  "long_description": "The TXG MCP Server provides a secure interface to TXG (10x Genomics) CLI tools, enabling LLMs to interact with genomics analysis workflows. This extension allows you to manage projects, run Cell Ranger analyses, upload/download files, and more through natural language commands.",
+  "author": {
+    "name": "TXG Team",
+    "email": "support@txg.com",
+    "url": "https://github.com/yourusername/TXG-MCP"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/TXG-MCP"
+  },
+  "homepage": "https://github.com/yourusername/TXG-MCP",
+  "documentation": "https://github.com/yourusername/TXG-MCP/blob/main/README.md",
+  "support": "https://github.com/yourusername/TXG-MCP/issues",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": {
+        "args": ["node", "{entry_point}"],
+        "env": {
+          "TXG_EXECUTABLE": "{user_config.txg_executable}",
+          "VERBOSE_LOGGING": "{user_config.verbose_logging}",
+          "COMMAND_TIMEOUT": "{user_config.command_timeout}",
+          "NODE_ENV": "production"
+        }
+      }
+    }
+  },
+  "user_config": [
+    {
+      "name": "txg_executable",
+      "display_name": "TXG Executable Path",
+      "description": "Path to the TXG CLI executable",
+      "type": "string",
+      "required": false,
+      "default": "/usr/local/bin/txg",
+      "placeholder": "/usr/local/bin/txg"
+    },
+    {
+      "name": "verbose_logging",
+      "display_name": "Verbose Logging",
+      "description": "Enable verbose logging for debugging",
+      "type": "boolean",
+      "required": false,
+      "default": false
+    },
+    {
+      "name": "command_timeout",
+      "display_name": "Command Timeout",
+      "description": "Maximum time (in milliseconds) to wait for a command to complete",
+      "type": "number",
+      "required": false,
+      "default": 120000,
+      "min": 5000,
+      "max": 600000
+    }
+  ],
+  "tools": [
+    {
+      "name": "create_cellranger_multi_analysis",
+      "description": "Creates a new Cell Ranger 'multi' analysis"
+    },
+    {
+      "name": "create_cellranger_count_analysis",
+      "description": "Creates a new Cell Ranger 'count' analysis"
+    },
+    {
+      "name": "create_cellranger_aggr_analysis",
+      "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs"
+    },
+    {
+      "name": "list_analyses",
+      "description": "Lists all analyses in a specific project"
+    },
+    {
+      "name": "get_analysis_details",
+      "description": "Shows details about a single analysis"
+    },
+    {
+      "name": "list_analysis_files",
+      "description": "Lists all files within a single analysis"
+    },
+    {
+      "name": "download_analysis_files",
+      "description": "Downloads all files from an analysis"
+    },
+    {
+      "name": "list_annotation_models",
+      "description": "Lists available cell annotation models"
+    },
+    {
+      "name": "list_fastqs",
+      "description": "Lists FASTQ files for a given project"
+    },
+    {
+      "name": "upload_fastqs",
+      "description": "Uploads FASTQ files to a project"
+    },
+    {
+      "name": "list_project_files",
+      "description": "Lists general files for a given project"
+    },
+    {
+      "name": "upload_project_file",
+      "description": "Uploads a local file to a project"
+    },
+    {
+      "name": "download_project_file",
+      "description": "Downloads a specific file from a project"
+    },
+    {
+      "name": "list_projects",
+      "description": "Lists all available projects"
+    },
+    {
+      "name": "create_project",
+      "description": "Creates a new project"
+    },
+    {
+      "name": "update_project",
+      "description": "Updates project details"
+    },
+    {
+      "name": "list_references",
+      "description": "Lists all custom references"
+    },
+    {
+      "name": "get_reference",
+      "description": "Shows details for a specific custom reference"
+    },
+    {
+      "name": "update_reference",
+      "description": "Updates custom reference details"
+    },
+    {
+      "name": "upload_reference",
+      "description": "Uploads a custom reference"
+    }
+  ],
+  "keywords": [
+    "txg",
+    "genomics",
+    "cell-ranger",
+    "10x",
+    "bioinformatics",
+    "single-cell",
+    "sequencing",
+    "analysis"
+  ],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "node_runtime": ">=16.0.0"
+  },
+  "icon": "icon.png"
+}
