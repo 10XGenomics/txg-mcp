@@ -1,6 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./Math/server/lib"
+        "./txg-mcp/server/lib"
     ],
     "python.pythonPath": "/opt/homebrew/bin/python3"
 }
