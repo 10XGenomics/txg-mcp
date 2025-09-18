@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 txg-mcpb/server/lib/*
 .claude/*
+txg-mcpb.zip
+txg-mcpb/bin/*
+.DS_Store
+*.mcpb
