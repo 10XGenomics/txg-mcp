@@ -1,0 +1,57 @@
+{
+  "dxt_version": "0.1",
+  "name": "10x Genomics",
+  "version": "1.0.0",
+  "description": "10x Genomics Cloud Analysis platform",
+  "long_description": "This extension enables Claude to interact with 10x Genomics Cloud Analysis platform, allowing users to launch, monitor, and manage single-cell and spatial genomics analysis pipelines directly through conversation. Users can execute Cell Ranger, Space Ranger, and other 10x workflows, upload data, track pipeline progress, retrieve results, and perform quality control checks. The extension supports single-cell RNA sequencing, spatial transcriptomics (Visium), chromatin accessibility (ATAC-seq), and immune repertoire profiling workflows.\\n\\nThe extension provides tools for pipeline management, data transfer, result visualization, and analysis interpretation, making complex genomics workflows accessible through natural language interaction with Claude.",
+  "author": {
+    "name": "10X Genomics, Inc.",
+    "url": "https://www.10xgenomics.com/"
+  },
+  "homepage": "https://www.10xgenomics.com/",
+  "support": "https://www.10xgenomics.com/support",
+  "icon": "icon.png",
+  "server": {
+    "type": "python",
+    "entry_point": "server/main.py",
+    "mcp_config": {
+      "command": "python",
+      "args": [
+        "${__dirname}/server/main.py"
+      ],
+      "env": {
+        "PYTHONPATH": "${__dirname}/server/lib"
+      }
+    }
+  },
+  "user_config": {
+    "Access Token": {
+      "type": "string",
+      "title": "Access Token",
+      "description": "Your Access Token for authentication (see https://cloud.10xgenomics.com/account/security)",
+      "required": true,
+      "sensitive": true
+    }
+  },
+  "keywords": [
+    "genomics",
+    "10x-genomics",
+    "single-cell",
+    "bioinformatics",
+    "cell-ranger",
+    "space-ranger",
+    "pipeline",
+    "cloud",
+    "rna-seq",
+    "spatial-transcriptomics",
+    "visium",
+    "atac-seq",
+    "scRNA-seq",
+    "analysis",
+    "biotechnology",
+    "sequencing",
+    "workflow",
+    "computational-biology"
+  ],
+  "license": "MIT"
+}

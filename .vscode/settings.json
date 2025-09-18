@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./Math/server/lib"
+    ],
+    "python.pythonPath": "/opt/homebrew/bin/python3"
+}
