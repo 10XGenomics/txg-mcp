@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Optional
 from unittest import result
 
+CommandResult = tuple[str, str, int, str]  # stdout, stderr, returncode, command line # todo hide after development
+
 class TxgCli:
     """Manager for bundled txg CLI binaries"""
     
@@ -14,6 +16,8 @@ class TxgCli:
         self._txg_path = None
         self._platform = self._get_platform()
         self._package_dir = Path(__file__).parent.parent
+        self._access_token = os.getenv("ACCESS_TOKEN")
+        #TODO : Add logic to verify access token is set and valid format
     
     def _get_platform(self) -> str:
         system = platform.system().lower()
@@ -49,11 +53,11 @@ class TxgCli:
             os.chmod(binary_path, 0o755)
         
         return str(binary_path)
-    
-    def run_command(self, args: list[str], timeout: int = 300) -> subprocess.CompletedProcess:
+
+    def run_command(self, args: list[str], timeout: int = 300) -> CommandResult:
         """Run a txg CLI command with the bundled binary"""
         txg_path = self.get_txg_path()
-        full_command = [txg_path] + args
+        full_command = [txg_path] + args + (["--access-token", self._access_token] if self._access_token else [])
         
         try:
             process = subprocess.run(
@@ -63,7 +67,7 @@ class TxgCli:
                 timeout=timeout
             )          
 
-            return process.stdout, process.stderr, process.returncode
+            return process.stdout, process.stderr, process.returncode, ' '.join(full_command)
         except subprocess.TimeoutExpired:
             raise RuntimeError(f"Command timed out after {timeout}s: {' '.join(full_command)}")
         except Exception as e:

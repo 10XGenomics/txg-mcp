@@ -21,12 +21,13 @@
         "${__dirname}/server/main.py"
       ],
       "env": {
-        "PYTHONPATH": "${__dirname}/server/lib"
+        "PYTHONPATH": "${__dirname}/server/lib",
+        "ACCESS_TOKEN": "${user_config.access_token}"
       }
     }
   },
   "user_config": {
-    "access-token": {
+    "access_token": {
       "type": "string",
       "title": "Access Token",
       "description": "Access Token for authentication (see https://cloud.10xgenomics.com/account/security)",
