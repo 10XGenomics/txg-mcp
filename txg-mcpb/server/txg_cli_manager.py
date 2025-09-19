@@ -55,6 +55,8 @@ class TxgCli:
         return str(binary_path)
 
     def run_command(self, args: list[str], timeout: int = 300) -> CommandResult:
+        #TODO make it async
+
         """Run a txg CLI command with the bundled binary"""
         txg_path = self.get_txg_path()
         full_command = [txg_path] + args + (["--access-token", self._access_token] if self._access_token else [])
