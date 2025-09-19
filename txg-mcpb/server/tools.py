@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from typing import Optional, List
+from typing import Optional, List, Annotated
+from pydantic import Field
 from txg_cli_manager import txg_cli
 from middleware import to_response
 
@@ -19,7 +20,7 @@ def register_tools(mcp):
     # --- Analysis Tools ---
     @mcp.tool(name="create_cellranger_multi_analysis", description="Creates a new Cell Ranger 'multi' analysis.")
     async def create_cellranger_multi_analysis(
-        analysis_name: str, 
+        analysis_name: Annotated[str, Field(description="Name of the analysis to create")], 
         csv_path: str, 
         project_id: Optional[str] = None, 
         project_name: Optional[str] = None, 
