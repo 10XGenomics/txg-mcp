@@ -5,3 +5,4 @@ package/bin/*
 .claude/*
 *.mcpb
 build/*
+package/bin-beta/*
