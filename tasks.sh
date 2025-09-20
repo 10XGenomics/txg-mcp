@@ -178,29 +178,113 @@ download_bin() {
     print_info "  - Windows: $bin_dir/windows/txg.exe"
 }
 
-# Download Python requirements/dependencies
+# Install Python requirements/dependencies
 download_requirements() {
-    print_info "Downloading Python requirements..."
+    local requirements_file="$SCRIPT_DIR/package/requirements.txt"
+    local lib_dir="$SCRIPT_DIR/package/lib"
 
-    # TODO: Implement requirements download logic
-    # - pip download or pip install to package/lib/
-    # - Handle dependency resolution
-    # - Ensure all required packages are included
+    print_info "Installing Python requirements..."
 
-    print_warning "download-requirements: Not yet implemented"
+    # Check if requirements.txt exists
+    if [[ ! -f "$requirements_file" ]]; then
+        print_error "requirements.txt not found at: $requirements_file"
+        return 1
+    fi
+
+    # Check if Python/pip are available
+    if ! command -v python3 &> /dev/null; then
+        print_error "Python 3 is required but not found"
+        return 1
+    fi
+
+    if ! command -v pip3 &> /dev/null && ! command -v pip &> /dev/null; then
+        print_error "pip is required but not found"
+        return 1
+    fi
+
+    # Determine pip command
+    local pip_cmd="pip3"
+    if ! command -v pip3 &> /dev/null; then
+        pip_cmd="pip"
+    fi
+
+    # Check if lib directory exists and has content
+    if [[ -d "$lib_dir" ]] && [[ "$(ls -A $lib_dir 2>/dev/null)" ]]; then
+        print_warning "Dependencies already exist in package/lib/"
+        read -p "Do you want to reinstall/update all dependencies? (y/N): " -r
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_info "Download cancelled"
+            return 0
+        fi
+    fi
+
+    # Create lib directory if it doesn't exist
+    mkdir -p "$lib_dir"
+
+    # Install requirements to lib directory
+    print_info "Installing dependencies to package/lib/..."
+    print_info "Running: $pip_cmd install -r $requirements_file --target $lib_dir --upgrade --force-reinstall"
+
+    if $pip_cmd install -r "$requirements_file" --target "$lib_dir" --upgrade --force-reinstall; then
+        print_success "Successfully installed all dependencies to package/lib/"
+
+        # Count installed packages
+        local package_count=$(ls -d "$lib_dir"/*.dist-info 2>/dev/null | wc -l | tr -d ' ')
+        print_info "Installed $package_count packages to $lib_dir"
+    else
+        print_error "Failed to install dependencies"
+        return 1
+    fi
 }
 
 # Pack the MCP bundle (.mcpb file)
 pack() {
+    local package_dir="$SCRIPT_DIR/package"
+    local build_dir="$SCRIPT_DIR/build"
+    local output_file="$build_dir/txg.mcpb"
+
     print_info "Packing MCP bundle..."
 
-    # TODO: Implement packing logic
-    # - Create manifest.json if needed
-    # - Bundle package/ directory
-    # - Create .mcpb (zip) file in build/
-    # - Verify bundle structure
+    # Check if mcpb command is available
+    if ! command -v mcpb &> /dev/null; then
+        print_error "mcpb command not found. Please install it first."
+        print_info "Installation: npm install -g @anthropic-ai/mcpb"
+        return 1
+    fi
 
-    print_warning "pack: Not yet implemented"
+    # Check if package directory exists
+    if [[ ! -d "$package_dir" ]]; then
+        print_error "Package directory not found: $package_dir"
+        return 1
+    fi
+
+    # Check if manifest.json exists
+    if [[ ! -f "$package_dir/manifest.json" ]]; then
+        print_error "manifest.json not found in package directory"
+        return 1
+    fi
+
+    # Create build directory if it doesn't exist
+    mkdir -p "$build_dir"
+
+    # Run mcpb pack command
+    print_info "Running: mcpb pack $package_dir $output_file"
+
+    if mcpb pack "$package_dir" "$output_file"; then
+        # Get file size
+        local file_size=$(ls -lh "$output_file" | awk '{print $5}')
+        print_success "Successfully created MCP bundle: $output_file ($file_size)"
+
+        # Verify the bundle is a valid zip
+        if unzip -t "$output_file" >/dev/null 2>&1; then
+            print_info "Bundle integrity verified"
+        else
+            print_warning "Bundle created but may have integrity issues"
+        fi
+    else
+        print_error "Failed to create MCP bundle"
+        return 1
+    fi
 }
 
 # Run the MCP server locally for testing
@@ -250,7 +334,7 @@ Usage: $0 <command> [options]
 Commands:
     download-bin [version]  Download TXG CLI binary files for all platforms
                             Optional: version (e.g., v3.0.1) or 'latest' (default)
-    download-reqs           Download Python dependencies to package/lib
+    install-requirements    Install Python dependencies to package/lib
     pack                    Create MCP bundle (.mcpb file) from package directory
     run-server              Run the MCP server locally for testing
     generate-capabilities   Generate capabilities reference documentation
@@ -260,6 +344,7 @@ Commands:
 Examples:
     $0 download-bin         # Download latest version
     $0 download-bin v3.0.1  # Download specific version
+    $0 install-requirements # Install Python dependencies
     $0 pack                 # Create .mcpb bundle
 
 EOF
@@ -273,7 +358,7 @@ main() {
         download-bin)
             download_bin "${2:-latest}"
             ;;
-        download-requirements)
+        install-requirements|install-reqs)
             download_requirements
             ;;
         pack)
