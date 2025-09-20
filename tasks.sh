@@ -365,15 +365,91 @@ run_server() {
 
 # Generate capabilities reference documentation
 generate_capabilities() {
-    print_info "Generating capabilities reference..."
+    local credentials_file="$SCRIPT_DIR/credentials.txt"
+    local server_script="$SCRIPT_DIR/package/server/main.py"
+    local lib_dir="$SCRIPT_DIR/package/lib"
+    local reference_dir="$SCRIPT_DIR/reference"
+    local output_file="$reference_dir/mcp_capabilities_reference.json"
+    local access_token=""
 
-    # TODO: Implement capabilities generation logic
-    # - Extract tools from server code
-    # - Generate markdown documentation
-    # - Include parameter descriptions
-    # - Create README or reference doc
+    print_info "Generating MCP capabilities reference..."
 
-    print_warning "generate-capabilities: Not yet implemented"
+    # Check if Python is available
+    if ! command -v python3 &> /dev/null; then
+        print_error "Python 3 is required but not found"
+        return 1
+    fi
+
+    # Check if server script exists
+    if [[ ! -f "$server_script" ]]; then
+        print_error "Server script not found: $server_script"
+        return 1
+    fi
+
+    # Get access token from credentials file
+    if [[ -f "$credentials_file" ]]; then
+        access_token=$(cat "$credentials_file")
+    else
+        print_error "Access token required. Run 'run-server' with a token first to save credentials"
+        return 1
+    fi
+
+    # Check if lib directory exists
+    if [[ ! -d "$lib_dir" ]]; then
+        print_error "Dependencies directory not found: $lib_dir"
+        print_info "Run 'install-requirements' first to install dependencies"
+        return 1
+    fi
+
+    # Create reference directory if it doesn't exist
+    mkdir -p "$reference_dir"
+
+    # Path to the query script
+    local query_script="$SCRIPT_DIR/scripts/query_mcp_capabilities.py"
+
+    # Check if query script exists
+    if [[ ! -f "$query_script" ]]; then
+        print_error "Query script not found: $query_script"
+        return 1
+    fi
+
+    # Run the query script
+    print_info "Querying server capabilities..."
+
+    export PYTHONPATH="$lib_dir:${PYTHONPATH:-}"
+
+    if python3 "$query_script" "$server_script" "$lib_dir" "$access_token" > "$output_file" 2>/tmp/mcp_query_error_$$.log; then
+        # Clean up temp error log
+        rm -f /tmp/mcp_query_error_$$.log
+
+        # Pretty print and validate the output
+        if python3 -m json.tool "$output_file" > "$output_file.tmp" 2>/dev/null; then
+            mv "$output_file.tmp" "$output_file"
+
+            # Count capabilities
+            local tools_count=$(python3 -c "import json; print(len(json.load(open('$output_file')).get('tools', [])))" 2>/dev/null || echo "0")
+            local resources_count=$(python3 -c "import json; print(len(json.load(open('$output_file')).get('resources', [])))" 2>/dev/null || echo "0")
+            local prompts_count=$(python3 -c "import json; print(len(json.load(open('$output_file')).get('prompts', [])))" 2>/dev/null || echo "0")
+
+            print_success "Successfully generated capabilities reference: $output_file"
+            print_info "Found: $tools_count tools, $resources_count resources, $prompts_count prompts"
+        else
+            print_error "Generated file is not valid JSON"
+            return 1
+        fi
+    else
+        print_error "Failed to query server capabilities"
+        print_info "Error log: /tmp/mcp_query_error_$$.log"
+
+        # Show error log if exists
+        if [[ -f /tmp/mcp_query_error_$$.log ]]; then
+            print_error "Error details:"
+            cat /tmp/mcp_query_error_$$.log
+            rm -f /tmp/mcp_query_error_$$.log
+        fi
+
+        return 1
+    fi
 }
 
 # Run tests

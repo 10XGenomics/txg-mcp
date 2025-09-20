@@ -1,0 +1,665 @@
+{
+    "server_info": {
+        "name": "10x-genomics",
+        "version": "1.14.1"
+    },
+    "protocol_version": "2025-03-26",
+    "capabilities": {
+        "experimental": {},
+        "prompts": {
+            "listChanged": false
+        },
+        "resources": {
+            "subscribe": false,
+            "listChanged": false
+        },
+        "tools": {
+            "listChanged": false
+        }
+    },
+    "tools": [
+        {
+            "name": "get_tool_version",
+            "description": "Get the version of the TXG CLI tool.",
+            "inputSchema": {
+                "properties": {},
+                "title": "get_tool_versionArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "verify_auth",
+            "description": "Verify authentication for the TXG CLI tool. Returns email of the authenticated user",
+            "inputSchema": {
+                "properties": {},
+                "title": "verify_authArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "create_cellranger_multi_analysis",
+            "description": "Creates a new Cell Ranger 'multi' analysis.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_name": {
+                        "description": "Name of the analysis to create",
+                        "title": "Analysis Name",
+                        "type": "string"
+                    },
+                    "csv_path": {
+                        "title": "Csv Path",
+                        "type": "string"
+                    },
+                    "project_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Id"
+                    },
+                    "project_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
+                    },
+                    "product_version": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Product Version"
+                    }
+                },
+                "required": [
+                    "analysis_name",
+                    "csv_path"
+                ],
+                "title": "create_cellranger_multi_analysisArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "create_cellranger_count_analysis",
+            "description": "Creates a new Cell Ranger 'count' analysis.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_name": {
+                        "title": "Analysis Name",
+                        "type": "string"
+                    },
+                    "transcriptome": {
+                        "title": "Transcriptome",
+                        "type": "string"
+                    },
+                    "fastqs": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Fastqs",
+                        "type": "array"
+                    },
+                    "project_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Id"
+                    },
+                    "project_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Name"
+                    },
+                    "expect_cells": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Expect Cells"
+                    },
+                    "chemistry": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "auto",
+                        "title": "Chemistry"
+                    }
+                },
+                "required": [
+                    "analysis_name",
+                    "transcriptome",
+                    "fastqs"
+                ],
+                "title": "create_cellranger_count_analysisArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "create_cellranger_aggr_analysis",
+            "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_name": {
+                        "title": "Analysis Name",
+                        "type": "string"
+                    },
+                    "csv_path": {
+                        "title": "Csv Path",
+                        "type": "string"
+                    },
+                    "project_id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Id"
+                    },
+                    "project_name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Project Name"
+                    },
+                    "normalize": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": "mapped",
+                        "title": "Normalize"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
+                    }
+                },
+                "required": [
+                    "analysis_name",
+                    "csv_path"
+                ],
+                "title": "create_cellranger_aggr_analysisArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_analyses",
+            "description": "Lists all analyses in a specific project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ],
+                "title": "list_analysesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "get_analysis_details",
+            "description": "Shows details about a single analysis.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_id": {
+                        "title": "Analysis Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "analysis_id"
+                ],
+                "title": "get_analysis_detailsArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_analysis_files",
+            "description": "Lists all files within a single analysis.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_id": {
+                        "title": "Analysis Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "analysis_id"
+                ],
+                "title": "list_analysis_filesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "download_analysis_files",
+            "description": "Downloads all files from an analysis to a specified local path.",
+            "inputSchema": {
+                "properties": {
+                    "analysis_id": {
+                        "title": "Analysis Id",
+                        "type": "string"
+                    },
+                    "output_path": {
+                        "title": "Output Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "analysis_id",
+                    "output_path"
+                ],
+                "title": "download_analysis_filesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_annotation_models",
+            "description": "Lists available cell annotation models.",
+            "inputSchema": {
+                "properties": {},
+                "title": "list_annotation_modelsArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_fastqs",
+            "description": "Lists FASTQ files for a given project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ],
+                "title": "list_fastqsArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "upload_fastqs",
+            "description": "Uploads FASTQ files from a local path to a project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "file_path": {
+                        "title": "File Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "file_path"
+                ],
+                "title": "upload_fastqsArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_libraries",
+            "description": "List all available FASTQ libraries.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ],
+                "title": "list_librariesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "set_library",
+            "description": "Set the library type for FASTQ sets.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "fastq_id": {
+                        "title": "Fastq Id",
+                        "type": "string"
+                    },
+                    "library_type": {
+                        "title": "Library Type",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "fastq_id",
+                    "library_type"
+                ],
+                "title": "set_libraryArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_project_files",
+            "description": "Lists general files for a given project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ],
+                "title": "list_project_filesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "upload_project_file",
+            "description": "Uploads a local file to a project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "file_path": {
+                        "title": "File Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "file_path"
+                ],
+                "title": "upload_project_fileArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "download_project_file",
+            "description": "Downloads a specific file from a project to a local path.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "file_name": {
+                        "title": "File Name",
+                        "type": "string"
+                    },
+                    "output_path": {
+                        "title": "Output Path",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "file_name",
+                    "output_path"
+                ],
+                "title": "download_project_fileArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_projects",
+            "description": "Lists all available projects.",
+            "inputSchema": {
+                "properties": {},
+                "title": "list_projectsArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "create_project",
+            "description": "Creates a new project with a given name and optional description.",
+            "inputSchema": {
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "create_projectArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "update_project",
+            "description": "Updates the name and/or description of an existing project.",
+            "inputSchema": {
+                "properties": {
+                    "project_id": {
+                        "title": "Project Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
+                    }
+                },
+                "required": [
+                    "project_id"
+                ],
+                "title": "update_projectArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "list_references",
+            "description": "Lists all custom references.",
+            "inputSchema": {
+                "properties": {},
+                "title": "list_referencesArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "get_reference",
+            "description": "Shows details for a specific custom reference.",
+            "inputSchema": {
+                "properties": {
+                    "reference_id": {
+                        "title": "Reference Id",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "reference_id"
+                ],
+                "title": "get_referenceArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "update_reference",
+            "description": "Updates the name and/or description for a custom reference.",
+            "inputSchema": {
+                "properties": {
+                    "reference_id": {
+                        "title": "Reference Id",
+                        "type": "string"
+                    },
+                    "name": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Name"
+                    },
+                    "description": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
+                    }
+                },
+                "required": [
+                    "reference_id"
+                ],
+                "title": "update_referenceArguments",
+                "type": "object"
+            }
+        },
+        {
+            "name": "upload_reference",
+            "description": "Uploads a custom reference from a local file path.",
+            "inputSchema": {
+                "properties": {
+                    "file_path": {
+                        "title": "File Path",
+                        "type": "string"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "organism": {
+                        "title": "Organism",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "file_path",
+                    "name",
+                    "organism"
+                ],
+                "title": "upload_referenceArguments",
+                "type": "object"
+            }
+        }
+    ],
+    "resources": [],
+    "prompts": []
+}
