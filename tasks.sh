@@ -289,15 +289,78 @@ pack() {
 
 # Run the MCP server locally for testing
 run_server() {
-    print_info "Running MCP server..."
+    local token="${1:-}"
+    local credentials_file="$SCRIPT_DIR/credentials.txt"
+    local server_script="$SCRIPT_DIR/package/server/main.py"
+    local lib_dir="$SCRIPT_DIR/package/lib"
+    local access_token=""
 
-    # TODO: Implement server run logic
-    # - Set up Python path
-    # - Set environment variables
-    # - Run python package/server/main.py
-    # - Handle graceful shutdown
+    print_info "Starting MCP server..."
 
-    print_warning "run-server: Not yet implemented"
+    # Check if server script exists
+    if [[ ! -f "$server_script" ]]; then
+        print_error "Server script not found: $server_script"
+        return 1
+    fi
+
+    # Check if Python is available
+    if ! command -v python3 &> /dev/null; then
+        print_error "Python 3 is required but not found"
+        return 1
+    fi
+
+    # Handle access token
+    if [[ -n "$token" ]]; then
+        # Token provided as argument
+        access_token="$token"
+
+        # Save to credentials file for future use
+        echo "$access_token" > "$credentials_file"
+        chmod 600 "$credentials_file"  # Restrict permissions
+        print_info "Access token saved to credentials.txt"
+    elif [[ -f "$credentials_file" ]]; then
+        # Read token from credentials file
+        access_token=$(cat "$credentials_file")
+        print_info "Using access token from credentials.txt"
+    else
+        # No token available
+        print_error "Access token required but not provided"
+        print_info "Usage: $0 run-server [access_token]"
+        print_info "Or save your token to credentials.txt"
+        print_info "Get your token from: https://cloud.10xgenomics.com/account/security"
+        return 1
+    fi
+
+    # Check if lib directory exists
+    if [[ ! -d "$lib_dir" ]]; then
+        print_warning "Dependencies directory not found: $lib_dir"
+        print_info "Run 'install-requirements' first to install dependencies"
+        read -p "Do you want to continue anyway? (y/N): " -r
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            return 0
+        fi
+    fi
+
+    # Set up environment variables
+    export PYTHONPATH="$lib_dir:${PYTHONPATH:-}"
+    export ACCESS_TOKEN="$access_token"
+
+    print_info "Environment setup:"
+    print_info "  PYTHONPATH: $lib_dir"
+    print_info "  ACCESS_TOKEN: ***${access_token: -4}"  # Show only last 4 chars
+
+    # Trap to handle Ctrl+C gracefully
+    trap 'print_info "Shutting down server..."; exit 0' INT TERM
+
+    # Run the server
+    print_info "Starting server (Press Ctrl+C to stop)..."
+    print_info "Running: python3 $server_script"
+
+    cd "$SCRIPT_DIR/package"
+    python3 "$server_script"
+
+    # Reset trap
+    trap - INT TERM
 }
 
 # Generate capabilities reference documentation
@@ -336,7 +399,8 @@ Commands:
                             Optional: version (e.g., v3.0.1) or 'latest' (default)
     install-requirements    Install Python dependencies to package/lib
     pack                    Create MCP bundle (.mcpb file) from package directory
-    run-server              Run the MCP server locally for testing
+    run-server [token]      Run the MCP server locally for testing
+                            Optional: access token (saved to credentials.txt)
     generate-capabilities   Generate capabilities reference documentation
     run-tests               Run test suite
     help                    Show this help message
@@ -346,6 +410,8 @@ Examples:
     $0 download-bin v3.0.1  # Download specific version
     $0 install-requirements # Install Python dependencies
     $0 pack                 # Create .mcpb bundle
+    $0 run-server           # Run server (uses saved token)
+    $0 run-server TOKEN123  # Run server with new token
 
 EOF
 }
@@ -365,7 +431,7 @@ main() {
             pack
             ;;
         run-server)
-            run_server
+            run_server "${2:-}"
             ;;
         generate-capabilities)
             generate_capabilities
