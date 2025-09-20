@@ -6,7 +6,7 @@
   "description": "Interact with 10x Genomics Cloud Analysis platform",
   "long_description": "This extension enables Claude to interact with 10x Genomics Cloud Analysis platform, allowing users to launch, monitor, and manage single-cell and spatial genomics analysis pipelines directly through conversation. Users can execute Cell Ranger, Space Ranger, and other 10x workflows, upload data, track pipeline progress, retrieve results, and perform quality control checks. The extension supports single-cell RNA sequencing, spatial transcriptomics (Visium), chromatin accessibility (ATAC-seq), and immune repertoire profiling workflows.\n\nThe extension provides tools for pipeline management, data transfer, result visualization, and analysis interpretation, making complex genomics workflows accessible through natural language interaction with Claude.",
   "author": {
-    "name": "10X Genomics, Inc.",
+    "name": "10x Genomics",
     "url": "https://www.10xgenomics.com/"
   },
   "homepage": "https://www.10xgenomics.com/",
@@ -21,7 +21,7 @@
         "${__dirname}/server/main.py"
       ],
       "env": {
-        "PYTHONPATH": "${__dirname}/server/lib",
+        "PYTHONPATH": "${__dirname}/lib",
         "ACCESS_TOKEN": "${user_config.access_token}"
       }
     }

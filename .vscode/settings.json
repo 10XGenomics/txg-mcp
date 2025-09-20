@@ -1,6 +1,6 @@
 {
     "python.analysis.extraPaths": [
-        "./txg-mcpb/server/lib"
+        "./package/lib"
     ],
     "python.pythonPath": "/opt/homebrew/bin/python3"
 }

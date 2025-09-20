@@ -1,8 +1,7 @@
 __pycache__/
-*.pyc
-txg-mcpb/server/lib/*
-.claude/*
-txg-mcpb.zip
-txg-mcpb/bin/*
+package/lib/*
+package/bin/*
 .DS_Store
+.claude/*
 *.mcpb
+build/*
