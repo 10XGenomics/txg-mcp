@@ -3,7 +3,7 @@
 from typing import Optional, List, Annotated
 from pydantic import Field
 from txg_cli_manager import txg_cli
-from middleware import to_response
+from middleware import to_response, to_analysis_response
 
 def register_tools(mcp):
     """Register all 10x Genomics tools with the MCP server"""
@@ -27,7 +27,7 @@ def register_tools(mcp):
         description: Optional[str] = None,
         product_version: Annotated[Optional[str], Field(description="Specific Cell Ranger version to use (e.g., '9.0.1')")] = None
     ) -> dict:
-        command = ["analyses", "create", "cellranger", "multi", "--analysis-name", analysis_name, "--csv", csv_path, "--assumeyes"]
+        command = ["analyses", "create", "cellranger", "multi", "--analysis-name", analysis_name, "--csv", csv_path, "--assumeyes", "--wait-completion=false"]
         if project_id: 
             command.extend(["--project-id", project_id])
         elif project_name: 
@@ -36,7 +36,7 @@ def register_tools(mcp):
             command.extend(["--description", description])
         if product_version: 
             command.extend(["--product-version", product_version])
-        return to_response(txg_cli.run_command(command))
+        return to_analysis_response(txg_cli.run_command(command))
 
     @mcp.tool(name="create_cellranger_count_analysis", description="Creates a new Cell Ranger 'count' analysis.")
     async def create_cellranger_count_analysis(
@@ -48,7 +48,7 @@ def register_tools(mcp):
         expect_cells: Annotated[Optional[int], Field(description="Expected number of cells (overrides auto-detection)")] = None,
         chemistry: Annotated[Optional[str], Field(description="Assay chemistry version (default: 'auto' for automatic detection)")] = "auto"
     ) -> dict:
-        command = ["analyses", "create", "cellranger", "count", "--analysis-name", analysis_name, "--transcriptome", transcriptome, "--assumeyes"]
+        command = ["analyses", "create", "cellranger", "count", "--analysis-name", analysis_name, "--transcriptome", transcriptome, "--assumeyes", "--wait-completion=false"]
         for fq_path in fastqs: 
             command.extend(["--fastqs", fq_path])
         if project_id: 
@@ -59,7 +59,7 @@ def register_tools(mcp):
             command.extend(["--expect-cells", str(expect_cells)])
         if chemistry: 
             command.extend(["--chemistry", chemistry])
-        return to_response(txg_cli.run_command(command))
+        return to_analysis_response(txg_cli.run_command(command))
 
     @mcp.tool(name="create_cellranger_aggr_analysis", description="Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs.")
     async def create_cellranger_aggr_analysis(
@@ -70,16 +70,16 @@ def register_tools(mcp):
         normalize: Annotated[Optional[str], Field(description="Normalization method: 'mapped' (default) or 'none'")] = "mapped",
         description: Optional[str] = None
     ) -> dict:
-        command = ["analyses", "create", "cellranger", "aggr", "--analysis-name", analysis_name, "--csv", csv_path, "--assumeyes"]
-        if project_id: 
+        command = ["analyses", "create", "cellranger", "aggr", "--analysis-name", analysis_name, "--csv", csv_path, "--assumeyes", "--wait-completion=false"]
+        if project_id:
             command.extend(["--project-id", project_id])
         elif project_name: 
             command.extend(["--project-name", project_name])
-        if normalize: 
+        if normalize:
             command.extend(["--normalize", normalize])
-        if description: 
+        if description:
             command.extend(["--description", description])
-        return to_response(txg_cli.run_command(command))
+        return to_analysis_response(txg_cli.run_command(command))
 
     @mcp.tool(name="list_analyses", description="Lists all analyses in a specific project.")
     async def list_analyses(

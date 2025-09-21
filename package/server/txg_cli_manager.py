@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 from unittest import result
 
-CommandResult = tuple[str, str, int, str]  # stdout, stderr, returncode, command line # todo hide after development
+CommandResult = tuple[str, str, int, str]  # stdout, stderr, returncode, command line
 
 class TxgCli:
     """Manager for bundled txg CLI binaries"""
