@@ -18,7 +18,7 @@ def register_tools(mcp):
         return to_response(txg_cli.run_command(["auth", "verify"]))
     
     # --- Analysis Tools ---
-    @mcp.tool(name="create_cellranger_multi_analysis", description="Creates a new Cell Ranger 'multi' analysis.")
+    @mcp.tool(name="create_cellranger_multi_analysis", description="Creates a new Cell Ranger 'multi' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.")
     async def create_cellranger_multi_analysis(
         analysis_name: Annotated[str, Field(description="Name of the analysis to create")],
         csv_path: Annotated[str, Field(description="Path to the multi config CSV file that defines the analysis parameters. Specification can be found at https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-multi-config-csv-opts")],
@@ -38,7 +38,7 @@ def register_tools(mcp):
             command.extend(["--product-version", product_version])
         return to_analysis_response(txg_cli.run_command(command))
 
-    @mcp.tool(name="create_cellranger_count_analysis", description="Creates a new Cell Ranger 'count' analysis.")
+    @mcp.tool(name="create_cellranger_count_analysis", description="Creates a new Cell Ranger 'count' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.")
     async def create_cellranger_count_analysis(
         analysis_name: Annotated[str, Field(description="Name of the analysis to create")],
         transcriptome: Annotated[str, Field(description="Reference transcriptome to use (e.g., 'refdata-cellranger-GRCh38-2024-A', or custom reference ID). Use the 'list_custom_references' or 'list_prebuilt_references' tools to find available references.")],
@@ -61,7 +61,7 @@ def register_tools(mcp):
             command.extend(["--chemistry", chemistry])
         return to_analysis_response(txg_cli.run_command(command))
 
-    @mcp.tool(name="create_cellranger_aggr_analysis", description="Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs.")
+    @mcp.tool(name="create_cellranger_aggr_analysis", description="Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. IMPORTANT: AAlways use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.")
     async def create_cellranger_aggr_analysis(
         analysis_name: Annotated[str, Field(description="Name of the aggregation analysis to create")],
         csv_path: Annotated[str, Field(description="Path to CSV file listing the analysis IDs to aggregate")],

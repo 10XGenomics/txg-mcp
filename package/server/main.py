@@ -8,6 +8,7 @@ from mcp.server.fastmcp import FastMCP
 import asyncio
 from txg_cli_manager import CommandResult, txg_cli
 from tools import register_tools
+from prompts import register_prompts
 
 # Parse command line arguments #TODO: do we need args?
 parser = argparse.ArgumentParser(description="10x Genomics MCP Server")
@@ -18,6 +19,7 @@ args = parser.parse_args()
 mcp = FastMCP("10x-genomics")
 
 register_tools(mcp)
+register_prompts(mcp)
 
 # Main execution
 if __name__ == "__main__":

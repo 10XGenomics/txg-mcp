@@ -38,7 +38,7 @@
         },
         {
             "name": "create_cellranger_multi_analysis",
-            "description": "Creates a new Cell Ranger 'multi' analysis.",
+            "description": "Creates a new Cell Ranger 'multi' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
             "inputSchema": {
                 "properties": {
                     "analysis_name": {
@@ -113,7 +113,7 @@
         },
         {
             "name": "create_cellranger_count_analysis",
-            "description": "Creates a new Cell Ranger 'count' analysis.",
+            "description": "Creates a new Cell Ranger 'count' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
             "inputSchema": {
                 "properties": {
                     "analysis_name": {
@@ -198,7 +198,7 @@
         },
         {
             "name": "create_cellranger_aggr_analysis",
-            "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs.",
+            "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. IMPORTANT: AAlways use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
             "inputSchema": {
                 "properties": {
                     "analysis_name": {
@@ -713,5 +713,20 @@
         }
     ],
     "resources": [],
-    "prompts": []
+    "prompts": [
+        {
+            "name": "confirm_analysis_parameters",
+            "description": "Prompt to help LLMs confirm analysis parameters with users before creating an analysis. Always use this prompt before calling any create_cellranger_* tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+            "arguments": [
+                {
+                    "name": "analysis_type",
+                    "required": true
+                },
+                {
+                    "name": "parameters",
+                    "required": true
+                }
+            ]
+        }
+    ]
 }
