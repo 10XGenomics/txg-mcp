@@ -456,13 +456,96 @@ generate_capabilities() {
 run_tests() {
     print_info "Running tests..."
 
-    # TODO: Implement test runner logic
-    # - Discover test files
-    # - Run Python tests (pytest/unittest)
-    # - Generate coverage report if applicable
-    # - Return appropriate exit code
+    local tests_dir="$SCRIPT_DIR/tests"
+    local lib_dir="$SCRIPT_DIR/package/lib"
+    local venv_dir="$SCRIPT_DIR/.venv_test"
+    local test_type="${1:-all}"  # Optional test type parameter
 
-    print_warning "run-tests: Not yet implemented"
+    # Check if tests directory exists
+    if [[ ! -d "$tests_dir" ]]; then
+        print_error "Tests directory not found: $tests_dir"
+        return 1
+    fi
+
+    # Check if dependencies are installed
+    if [[ ! -d "$lib_dir" ]]; then
+        print_warning "Dependencies not found in $lib_dir"
+        print_info "Installing requirements first..."
+        install_requirements || return 1
+    fi
+
+    # Create or activate test virtual environment
+    if [[ ! -d "$venv_dir" ]]; then
+        print_info "Creating test virtual environment..."
+        python3 -m venv "$venv_dir"
+        if [[ $? -ne 0 ]]; then
+            print_error "Failed to create virtual environment"
+            return 1
+        fi
+    fi
+
+    # Activate virtual environment
+    source "$venv_dir/bin/activate"
+
+    # Install/upgrade test dependencies
+    print_info "Installing test dependencies..."
+    pip install --upgrade pip >/dev/null 2>&1
+    if ! pip install -r "$tests_dir/requirements.txt" >/dev/null 2>&1; then
+        print_error "Failed to install test dependencies"
+        deactivate
+        return 1
+    fi
+
+    # Set environment variables
+    export PYTHONPATH="$SCRIPT_DIR:$lib_dir:$SCRIPT_DIR/package:$SCRIPT_DIR/package/server:${PYTHONPATH:-}"
+    export ACCESS_TOKEN="${ACCESS_TOKEN:-test_token}"
+
+    # Run pytest based on test type
+    case "$test_type" in
+        all)
+            print_info "Running all tests..."
+            pytest "$tests_dir" -v
+            ;;
+        unit)
+            print_info "Running unit tests..."
+            pytest "$tests_dir" -v -m "not integration"
+            ;;
+        integration)
+            print_info "Running integration tests..."
+            pytest "$tests_dir" -v -m "integration"
+            ;;
+        coverage)
+            print_info "Running tests with coverage..."
+            pytest "$tests_dir" -v --cov=package/server --cov-report=term-missing --cov-report=html
+            print_success "Coverage report saved to htmlcov/index.html"
+            ;;
+        quick)
+            print_info "Running quick smoke tests..."
+            pytest "$tests_dir/test_response_handling.py" "$tests_dir/test_command_building.py" -v
+            ;;
+        protocol)
+            print_info "Running MCP protocol tests..."
+            pytest "$tests_dir/test_mcp_protocol.py" -v
+            ;;
+        *)
+            print_error "Unknown test type: $test_type"
+            print_info "Valid options: all, unit, integration, coverage, quick, protocol"
+            return 1
+            ;;
+    esac
+
+    local exit_code=$?
+
+    # Deactivate virtual environment
+    deactivate
+
+    if [[ $exit_code -eq 0 ]]; then
+        print_success "✅ All tests passed!"
+    else
+        print_error "❌ Some tests failed (exit code: $exit_code)"
+    fi
+
+    return $exit_code
 }
 
 # Show usage information
@@ -478,7 +561,8 @@ Commands:
     run-server [token]      Run the MCP server locally for testing
                             Optional: access token (saved to credentials.txt)
     generate-capabilities   Generate capabilities reference documentation
-    run-tests               Run test suite
+    run-tests [type]        Run test suite
+                            Types: all (default), unit, integration, coverage, quick, protocol
     help                    Show this help message
 
 Examples:
@@ -488,6 +572,8 @@ Examples:
     $0 pack                 # Create .mcpb bundle
     $0 run-server           # Run server (uses saved token)
     $0 run-server TOKEN123  # Run server with new token
+    $0 run-tests            # Run all tests
+    $0 run-tests coverage   # Run tests with coverage report
 
 EOF
 }

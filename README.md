@@ -103,19 +103,32 @@ txg-mcp/
 |-- scripts/                     # Various scripts for development
 |-- build/                       # output mcp bundle
 |-- reference/                   # Reference spec for the server
+|-- tests/                       # Tests
 |-- tasks.sh                     # Development tasks script
 `-- README.md                    # This file
 ```
 
 ### Testing
 
-Run the server locally to test APIs manually:
+```bash
+# Run all tests
+./tasks.sh run-tests
+
+# Run specific test categories
+./tasks.sh run-tests unit         # Unit tests only
+./tasks.sh run-tests integration  # Integration tests only
+./tasks.sh run-tests coverage     # Generate coverage report
+./tasks.sh run-tests quick        # Quick smoke tests
+./tasks.sh run-tests protocol     # MCP protocol compliance tests
+```
 
 ```bash
-# Save your access token and run server
+# Run the server locally to test APIs manually.
 ./tasks.sh run-server YOUR_ACCESS_TOKEN
+```
 
-# Runs the server, and hits get_capabilities and updates mcp_capabilities_reference.json
+```bash
+# Query server capabilities and update reference documentation
 ./tasks.sh generate-capabilities
 ```
 
