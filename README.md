@@ -30,6 +30,7 @@ A one-click MCP (Model Context Protocol) server extension that seamlessly integr
 
 ### Prerequisites
 - Claude Desktop application
+- Python 3.10 or higher (required by MCP framework)
 - Access to 10x Genomics Cloud Analysis platform
 - Valid 10x Genomics access token
 
