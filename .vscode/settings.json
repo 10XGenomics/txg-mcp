@@ -1,6 +1,0 @@
-{
-    "python.analysis.extraPaths": [
-        "./package/lib"
-    ],
-    "python.pythonPath": "/opt/homebrew/bin/python3"
-}
