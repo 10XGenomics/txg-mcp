@@ -13,6 +13,21 @@ export interface AnalysisResponse extends Response {
   next_steps?: string;
 }
 
+// Wrap response in MCP protocol structure
+// This is separate from toResponse so that:
+// 1. Tests can test toResponse logic without MCP wrapper
+// 2. If MCP format changes or we switch to MCPServer, only this function changes
+export function wrapResponse(response: Response | AnalysisResponse) {
+  return {
+    content: [
+      {
+        type: 'text',
+        text: JSON.stringify(response)
+      }
+    ]
+  };
+}
+
 export function toResponse(result: CommandResult): Response {
   // When command succeeds, treat stderr as additional output, not an error
   // Some CLI tools output success messages to stderr
