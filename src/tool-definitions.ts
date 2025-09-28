@@ -1,0 +1,398 @@
+export const TOOL_DEFINITIONS = [
+  // Core Tools
+  {
+    name: "get_tool_version",
+    description: "Get the version of the TXG CLI tool.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "verify_auth",
+    description: "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud Analysis.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  // Analysis Tools
+  {
+    name: "create_cellranger_multi_analysis",
+    description: "Creates a new Cell Ranger 'multi' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_name: { type: "string", description: "Name of the analysis to create" },
+        csv_path: {
+          type: "string",
+          description: "Path to the multi config CSV file that defines the analysis parameters. Specification can be found at https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-multi-config-csv-opts"
+        },
+        project_id: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "ID of existing project to create the analysis in. Either project_id or project_name must be specified"
+        },
+        project_name: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Name of a new project to create for this analysis (alternative to project_id)"
+        },
+        description: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Analysis description"
+        },
+        product_version: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Specific Cell Ranger version to use (e.g., '9.0.1')"
+        }
+      },
+      required: ["analysis_name", "csv_path"]
+    }
+  },
+  {
+    name: "create_cellranger_count_analysis",
+    description: "Creates a new Cell Ranger 'count' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_name: { type: "string", description: "Name of the analysis to create" },
+        transcriptome: {
+          type: "string",
+          description: "Reference transcriptome to use (e.g., 'refdata-cellranger-GRCh38-2024-A', or custom reference ID). Use the 'list_custom_references' or 'list_prebuilt_references' tools to find available references."
+        },
+        fastqs: {
+          type: "array",
+          items: { type: "string" },
+          description: "List of FASTQ file paths or FASTQ set IDs to analyze. Can be local paths or previously uploaded FASTQ set IDs in the format txg://fastqs/<filename> or txg://fastqs/<fastq_uuid>"
+        },
+        project_id: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "ID of existing project to create the analysis in"
+        },
+        project_name: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Name of a new project to create for this analysis (alternative to project_id)"
+        },
+        expect_cells: {
+          anyOf: [{ type: "integer" }, { type: "null" }],
+          default: null,
+          description: "Expected number of cells (overrides auto-detection)"
+        },
+        chemistry: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: "auto",
+          description: "Assay chemistry version (default: 'auto' for automatic detection)"
+        }
+      },
+      required: ["analysis_name", "transcriptome", "fastqs"]
+    }
+  },
+  {
+    name: "create_cellranger_aggr_analysis",
+    description: "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_name: { type: "string", description: "Name of the aggregation analysis" },
+        csv_path: {
+          type: "string",
+          description: "Path to CSV file listing the analysis IDs to aggregate"
+        },
+        project_id: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "ID of existing project to create the analysis in"
+        },
+        project_name: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Name of a new project to create for this analysis (alternative to project_id)"
+        },
+        normalize: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: "mapped",
+          description: "Normalization method: 'mapped' (default) or 'none'"
+        },
+        description: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Description for the aggregation analysis"
+        }
+      },
+      required: ["analysis_name", "csv_path"]
+    }
+  },
+  {
+    name: "list_analyses",
+    description: "Lists all analyses in a specific project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to list analyses from" }
+      },
+      required: ["project_id"]
+    }
+  },
+  {
+    name: "get_analysis_details",
+    description: "Shows details about a single analysis.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_id: { type: "string", description: "Analysis ID to get details for" }
+      },
+      required: ["analysis_id"]
+    }
+  },
+  {
+    name: "list_analysis_files",
+    description: "Lists all files within a single analysis.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_id: { type: "string", description: "Analysis ID to list files from" }
+      },
+      required: ["analysis_id"]
+    }
+  },
+  {
+    name: "download_analysis_files",
+    description: "Downloads all files from an analysis to a specified local path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        analysis_id: { type: "string", description: "Analysis ID to download files from" },
+        output_path: { type: "string", description: "Local directory path where files will be saved" }
+      },
+      required: ["analysis_id", "output_path"]
+    }
+  },
+
+  // Annotation Tools
+  {
+    name: "list_annotation_models",
+    description: "Lists available cell annotation models.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+
+  // FASTQ Tools
+  {
+    name: "list_fastqs",
+    description: "Lists FASTQ files for a given project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to list FASTQ files from" }
+      },
+      required: ["project_id"]
+    }
+  },
+  {
+    name: "upload_fastqs",
+    description: "Uploads FASTQ files from a local path to a project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to upload FASTQ files to" },
+        file_path: {
+          type: "string",
+          description: "Path to FASTQ file(s) or directory containing FASTQ files. Files must follow Illumina naming convention (e.g., sample_S1_L001_R1_001.fastq.gz)"
+        }
+      },
+      required: ["project_id", "file_path"]
+    }
+  },
+  {
+    name: "list_libraries",
+    description: "List all available FASTQ libraries.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to list libraries from" }
+      },
+      required: ["project_id"]
+    }
+  },
+  {
+    name: "set_library",
+    description: "Set the library type for FASTQ sets.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID containing the FASTQ set" },
+        fastq_id: { type: "string", description: "FASTQ set ID to update" },
+        library_type: {
+          type: "string",
+          description: "Library type to set. To get available types, use the 'list_libraries' tool."
+        }
+      },
+      required: ["project_id", "fastq_id", "library_type"]
+    }
+  },
+
+  // File Management Tools
+  {
+    name: "list_project_files",
+    description: "Lists files for a given project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to list files from" }
+      },
+      required: ["project_id"]
+    }
+  },
+  {
+    name: "upload_project_file",
+    description: "Uploads a local file to a project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to upload file to" },
+        file_path: { type: "string", description: "Path to the local file to upload" }
+      },
+      required: ["project_id", "file_path"]
+    }
+  },
+  {
+    name: "download_project_file",
+    description: "Downloads a specific file from a project to a local path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID containing the file" },
+        file_id: {
+          type: "string",
+          description: "IDs of the files to download. Use the 'list_project_files' tool to find file IDs."
+        },
+        output_path: { type: "string", description: "Local directory path where file will be saved" }
+      },
+      required: ["project_id", "file_name", "output_path"]
+    }
+  },
+
+  // Project Management Tools
+  {
+    name: "list_projects",
+    description: "Lists all available projects.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "create_project",
+    description: "Creates a new project with a given name and optional description.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        name: { type: "string", description: "Name for the new project" },
+        description: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "Optional description for the project"
+        }
+      },
+      required: ["name"]
+    }
+  },
+  {
+    name: "update_project",
+    description: "Updates the name and/or description of an existing project.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        project_id: { type: "string", description: "Project ID to update" },
+        name: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "New name for the project"
+        },
+        description: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "New description for the project"
+        }
+      },
+      required: ["project_id"]
+    }
+  },
+
+  // Reference Management Tools
+  {
+    name: "list_custom_references",
+    description: "Lists all custom references.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "list_prebuilt_references",
+    description: "Lists all prebuilt references.",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
+    name: "get_reference",
+    description: "Shows details for a specific custom reference.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        reference_id: { type: "string", description: "Reference ID to get details for" }
+      },
+      required: ["reference_id"]
+    }
+  },
+  {
+    name: "update_reference",
+    description: "Updates the name and/or description for a custom reference.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        reference_id: { type: "string", description: "Reference ID to update" },
+        name: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "New name for the reference"
+        },
+        description: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description: "New description for the reference"
+        }
+      },
+      required: ["reference_id"]
+    }
+  },
+  {
+    name: "upload_reference",
+    description: "Uploads a custom reference from a local file path.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        file_path: {
+          type: "string",
+          description: "Path to reference file: can be a cellranger mkref/mkvdjref folder, .tar.gz file, or feature/probeset .CSV file"
+        },
+        name: { type: "string", description: "Name for the custom reference" },
+        organism: {
+          type: "string",
+          description: "Organism name (e.g., 'Human', 'Mouse', or custom species name)"
+        }
+      },
+      required: ["file_path", "name", "organism"]
+    }
+  }
+];
