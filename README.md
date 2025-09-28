@@ -30,7 +30,7 @@ npm run build
 npm test
 
 # 4. Download TXG Binaries (or manually create them in package/bin/<darwin|linux|windows>):
-./tasks.sh download-bin
+npm run download-bin
 
 # 5. Create MCP bundle
 npm run pack
@@ -42,7 +42,10 @@ npm run pack
 
 # 7. Query server capabilities and update reference documentation
 # note: this is not needed for functionality, just make sure to run it before submitting a PR (makes it easier to review changes to the mcp APIs)
-./tasks.sh generate-capabilities
+npm run generate-capabilities
+
+# 8. For complete release build (clean + build + test + capabilities + pack):
+npm run release
 ```
 
 #### Access Token Management
