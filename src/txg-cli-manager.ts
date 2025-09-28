@@ -47,6 +47,11 @@ class TxgCliManager {
   }
 
   private findBundledBinary(): string {
+    // Skip binary check in test environment
+    if (process.env.NODE_ENV === 'test') {
+      return 'mock-txg-binary';
+    }
+
     // Construct executable name based on platform
     const exeName = this.platform === 'windows' ? 'txg.exe' : 'txg';
 
@@ -71,6 +76,16 @@ class TxgCliManager {
   }
 
   async runCommand(args: string[], timeout: number = 600000): Promise<CommandResult> {
+    // In test mode, return mock result
+    if (process.env.NODE_ENV === 'test') {
+      return Promise.resolve({
+        stdout: '',
+        stderr: '',
+        exitCode: 0,
+        fullCommand: `mock-txg ${args.join(' ')}`
+      });
+    }
+
     return new Promise((resolve, reject) => {
 
       // Build full command array with access token if available

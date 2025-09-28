@@ -13,69 +13,79 @@ import { registerTools } from './tools.js';
 import { registerPrompts, PROMPT_DEFINITIONS } from './prompts.js';
 import { TOOL_DEFINITIONS } from './tool-definitions.js';
 
-// Validate environment
-if (!process.env.ACCESS_TOKEN) {
-  console.error('Warning: ACCESS_TOKEN environment variable not set');
+// Factory function for creating server (useful for testing)
+export function createServer() {
+  const server = new Server(
+    {
+      name: '10x-genomics',
+      version: '1.0.0',
+    },
+    {
+      capabilities: {
+        tools: {},
+        prompts: {},
+        resources: {}
+      },
+    }
+  );
+
+  // Register tools list handler
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    return {
+      tools: TOOL_DEFINITIONS
+    };
+  });
+
+  // Register prompts list handler
+  server.setRequestHandler(ListPromptsRequestSchema, async () => {
+    return {
+      prompts: PROMPT_DEFINITIONS
+    };
+  });
+
+  // Register resources list handler (returns empty array as we don't have resources)
+  server.setRequestHandler(ListResourcesRequestSchema, async () => {
+    return {
+      resources: []
+    };
+  });
+
+  // Register tool and prompt handlers
+  registerTools(server);
+  registerPrompts(server);
+
+  // Error handling
+  server.onerror = (error) => {
+    console.error('[MCP Error]', error);
+  };
+
+  return server;
 }
 
-// Create server instance
-const server = new Server(
-  {
-    name: '10x-genomics',
-    version: '1.0.0',
-  },
-  {
-    capabilities: {
-      tools: {},
-      prompts: {},
-      resources: {}
-    },
+// Only run main when not imported (not in test mode)
+if (process.env.NODE_ENV !== 'test') {
+  // Validate environment
+  if (!process.env.ACCESS_TOKEN) {
+    console.error('Warning: ACCESS_TOKEN environment variable not set');
   }
-);
 
-// Register tools list handler
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  return {
-    tools: TOOL_DEFINITIONS
+  // Create server instance
+  const server = createServer();
+
+  process.on('SIGINT', async () => {
+    await server.close();
+    process.exit(0);
+  });
+
+  // Start server
+  const main = async () => {
+    const transport = new StdioServerTransport();
+    await server.connect(transport);
+    console.error('10x Genomics MCP Server running...');
   };
-});
 
-// Register prompts list handler
-server.setRequestHandler(ListPromptsRequestSchema, async () => {
-  return {
-    prompts: PROMPT_DEFINITIONS
-  };
-});
-
-// Register resources list handler (returns empty array as we don't have resources)
-server.setRequestHandler(ListResourcesRequestSchema, async () => {
-  return {
-    resources: []
-  };
-});
-
-// Register tool and prompt handlers
-registerTools(server);
-registerPrompts(server);
-
-// Error handling
-server.onerror = (error) => {
-  console.error('[MCP Error]', error);
-};
-
-process.on('SIGINT', async () => {
-  await server.close();
-  process.exit(0);
-});
-
-// Start server
-const main = async () => {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('10x Genomics MCP Server running...');
-};
-
-main().catch((error) => {
-  console.error('Failed to start server:', error);
-  process.exit(1);
-});
+  main().catch((error) => {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  });
+}

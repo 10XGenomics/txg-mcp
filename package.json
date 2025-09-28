@@ -9,7 +9,11 @@
     "start": "./tasks.sh run-server",
     "clean": "rm -rf build/server",
     "pack": "./tasks.sh pack",
-    "test": "jest",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:unit": "jest tests/unit",
+    "test:integration": "jest tests/integration",
     "generate-capabilities": "./tasks.sh generate-capabilities"
   },
   "dependencies": {
@@ -17,12 +21,12 @@
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.3.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.19.17",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.4",
     "tsx": "^4.0.0",
-    "jest": "^29.0.0",
-    "@types/jest": "^29.0.0",
-    "ts-jest": "^29.0.0"
+    "typescript": "^5.3.0"
   },
   "engines": {
     "node": ">=18.0.0"
