@@ -2,7 +2,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { txgCli } from './txg-cli-manager.js';
-import { toResponse, toAnalysisResponse } from './middleware.js';
+import { toResponse, toAnalysisResponse, wrapResponse } from './middleware.js';
 
 export function registerTools(server: Server) {
   // Register the tool call handler
@@ -11,24 +11,10 @@ export function registerTools(server: Server) {
 
     switch (name) {
       case 'get_tool_version':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['--version'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['--version'])));
 
       case 'verify_auth':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['auth', 'verify'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['auth', 'verify'])));
 
       // --- Analysis Tools ---
       case 'create_cellranger_multi_analysis': {
@@ -52,14 +38,7 @@ export function registerTools(server: Server) {
         if (params.description) command.push('--description', params.description);
         if (params.product_version) command.push('--product-version', params.product_version);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toAnalysisResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toAnalysisResponse(await txgCli.runCommand(command)));
       }
 
       case 'create_cellranger_count_analysis': {
@@ -87,14 +66,7 @@ export function registerTools(server: Server) {
         if (params.expect_cells) command.push('--expect-cells', params.expect_cells.toString());
         if (params.chemistry) command.push('--chemistry', params.chemistry);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toAnalysisResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toAnalysisResponse(await txgCli.runCommand(command)));
       }
 
       case 'create_cellranger_aggr_analysis': {
@@ -118,14 +90,7 @@ export function registerTools(server: Server) {
         if (params.normalize) command.push('--normalize', params.normalize);
         if (params.description) command.push('--description', params.description);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toAnalysisResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toAnalysisResponse(await txgCli.runCommand(command)));
       }
 
       case 'list_analyses': {
@@ -133,14 +98,7 @@ export function registerTools(server: Server) {
           project_id: z.string().describe("Project ID to list analyses from")
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['analyses', 'list', params.project_id])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['analyses', 'list', params.project_id])));
       }
 
       case 'get_analysis_details': {
@@ -148,14 +106,7 @@ export function registerTools(server: Server) {
           analysis_id: z.string().describe("Analysis ID to get details for")
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['analyses', 'get', params.analysis_id])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['analyses', 'get', params.analysis_id])));
       }
 
       case 'list_analysis_files': {
@@ -163,14 +114,7 @@ export function registerTools(server: Server) {
           analysis_id: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['analyses', 'files', params.analysis_id])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['analyses', 'files', params.analysis_id])));
       }
 
       case 'download_analysis_files': {
@@ -179,29 +123,15 @@ export function registerTools(server: Server) {
           output_path: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'analyses', 'download', params.analysis_id,
                 '--target-dir', params.output_path, '--assumeyes'
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       // --- Annotation Tools ---
       case 'list_annotation_models':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['annotation', 'models', 'list'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['annotation', 'models', 'list'])));
 
       // --- FASTQ Tools ---
       case 'list_fastqs': {
@@ -209,14 +139,7 @@ export function registerTools(server: Server) {
           project_id: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['fastqs', 'list', params.project_id])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['fastqs', 'list', params.project_id])));
       }
 
       case 'upload_fastqs': {
@@ -225,17 +148,10 @@ export function registerTools(server: Server) {
           file_path: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'fastqs', 'upload', '--project-id', params.project_id,
                 params.file_path, '--assumeyes'
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       case 'list_libraries': {
@@ -243,14 +159,7 @@ export function registerTools(server: Server) {
           project_id: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['fastqs', 'library'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['fastqs', 'library'])));
       }
 
       case 'set_library': {
@@ -260,17 +169,10 @@ export function registerTools(server: Server) {
           library_type: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'fastqs', 'library', '--project-id', params.project_id,
                 params.fastq_id, params.library_type
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       // --- File Management Tools ---
@@ -279,16 +181,9 @@ export function registerTools(server: Server) {
           project_id: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'files', 'list', params.project_id
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       case 'upload_project_file': {
@@ -297,17 +192,10 @@ export function registerTools(server: Server) {
           file_path: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'files', 'upload', '--project-id', params.project_id,
                 params.file_path, '--assumeyes'
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       case 'download_project_file': {
@@ -317,30 +205,16 @@ export function registerTools(server: Server) {
           output_path: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'files', 'download', params.project_id,
                 '--file-id', params.file_id,
                 '--target-dir', params.output_path, '--assumeyes'
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       // --- Project Management Tools ---
       case 'list_projects':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['projects', 'list'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['projects', 'list'])));
 
       case 'create_project': {
         const schema = z.object({
@@ -351,14 +225,7 @@ export function registerTools(server: Server) {
         const command = ['projects', 'create', '--name', params.name, '--assumeyes'];
         if (params.description) command.push('--description', params.description);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(command)));
       }
 
       case 'update_project': {
@@ -372,50 +239,22 @@ export function registerTools(server: Server) {
         if (params.name) command.push('--name', params.name);
         if (params.description) command.push('--description', params.description);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(command)));
       }
 
       // --- Reference Management Tools ---
       case 'list_custom_references':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['references', 'list'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['references', 'list'])));
 
       case 'list_prebuilt_references':
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['prebuilt-reference'])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['prebuilt-reference'])));
 
       case 'get_reference': {
         const schema = z.object({
           reference_id: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(['references', 'get', params.reference_id])))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(['references', 'get', params.reference_id])));
       }
 
       case 'update_reference': {
@@ -429,14 +268,7 @@ export function registerTools(server: Server) {
         if (params.name) command.push('--name', params.name);
         if (params.description) command.push('--description', params.description);
 
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand(command)))
-            }
-          ]
-        };
+        return wrapResponse(toResponse(await txgCli.runCommand(command)));
       }
 
       case 'upload_reference': {
@@ -446,19 +278,12 @@ export function registerTools(server: Server) {
           organism: z.string()
         });
         const params = schema.parse(args);
-        return {
-          content: [
-            {
-              type: 'text',
-              text: JSON.stringify(toResponse(await txgCli.runCommand([
+        return wrapResponse(toResponse(await txgCli.runCommand([
                 'references', 'upload', params.file_path,
                 '--name', params.name,
                 '--organism', params.organism,
                 '--assumeyes'
-              ])))
-            }
-          ]
-        };
+              ])));
       }
 
       default:

@@ -94,6 +94,8 @@ class TxgCliManager {
         fullArgs.push('--access-token', this.accessToken);
       }
 
+      fullArgs.push('--tags', 'mcpb');
+
       const fullCommand = `${this.txgPath} ${fullArgs.join(' ')}`;
 
       const child = spawn(this.txgPath, fullArgs, {
