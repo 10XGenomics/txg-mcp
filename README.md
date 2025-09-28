@@ -26,18 +26,21 @@ npm install
 # 2. Build TypeScript
 npm run build
 
-# 3. Download TXG Binaries (or manually create them in package/bin/<darwin|linux|windows>):
+# 3. Run tests
+npm test
+
+# 4. Download TXG Binaries (or manually create them in package/bin/<darwin|linux|windows>):
 ./tasks.sh download-bin
 
-# 4. Create MCP bundle
+# 5. Create MCP bundle
 npm run pack
 
-# 5. Deploy
+# 6. Deploy
  # Open Claude Desktop
  # Go to Settings > Extensions > Browse
  # Install .mcpb file
 
-# 6. Query server capabilities and update reference documentation
+# 7. Query server capabilities and update reference documentation
 # note: this is not needed for functionality, just make sure to run it before submitting a PR (makes it easier to review changes to the mcp APIs)
 ./tasks.sh generate-capabilities
 ```
@@ -59,11 +62,12 @@ The token is automatically saved to `credentials.txt` (gitignored) when provided
 
 
 
-## Architecture
+## Project Structure
 
 ```
   txg-mcp/
   ├── src/                   # TypeScript source code for MCP server
+  ├── tests/                 # Test files
   ├── build/                 # Compiled JavaScript and binaries (content of the mcpb file)
   │   ├── server/            # Compiled server code
   │   ├── bin/               # Platform-specific TXG binaries
