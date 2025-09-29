@@ -1,3 +1,10 @@
+const PIPELINE_SELECTION_GUIDANCE =
+  "Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type.";
+
+const ANALYSIS_CONFIRMATION_INSTRUCTION =
+  "CRITICAL: Always explicitly confirm parameters before creating analysis (expensive, hours-long compute). " +
+  "Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'";
+
 export const TOOL_DEFINITIONS = [
   // Core Tools
   {
@@ -20,7 +27,7 @@ export const TOOL_DEFINITIONS = [
   // Analysis Tools
   {
     name: "create_cellranger_multi_analysis",
-    description: "Creates a new Cell Ranger 'multi' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    description: "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
@@ -55,7 +62,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "create_cellranger_count_analysis",
-    description: "Creates a new Cell Ranger 'count' analysis. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    description: "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
@@ -95,7 +102,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "create_cellranger_aggr_analysis",
-    description: "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. IMPORTANT: Always use the MCP server prompt 'confirm_analysis_parameters' before calling this tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    description: "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. " + ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
@@ -198,7 +205,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "upload_fastqs",
-    description: "Uploads FASTQ files from a local path to a project.",
+    description: "Uploads FASTQ files from a local path to a project. This can take a while depending on file size and network speed.",
     inputSchema: {
       type: "object",
       properties: {
@@ -213,7 +220,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "list_libraries",
-    description: "List all available FASTQ libraries.",
+    description: "List all available FASTQ library types. Returns both user-friendly names (TEXT) and internal identifiers (NAME) for each library type.",
     inputSchema: {
       type: "object",
       properties: {
@@ -224,7 +231,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "set_library",
-    description: "Set the library type for FASTQ sets.",
+    description: "Set the library type for FASTQ sets. Use the internal NAME identifier (e.g., 'singleThreeExpression', 'antibodyCapture') not the user-friendly TEXT description. When discussing with users, reference the friendly names like 'Next GEM 3' Gene Expression v3' or 'Antibody Capture', but always pass the corresponding NAME value to this tool.",
     inputSchema: {
       type: "object",
       properties: {
@@ -232,13 +239,12 @@ export const TOOL_DEFINITIONS = [
         fastq_id: { type: "string", description: "FASTQ set ID to update" },
         library_type: {
           type: "string",
-          description: "Library type to set. To get available types, use the 'list_libraries' tool."
+          description: "Internal library type identifier (NAME field from list_libraries). Examples: 'singleThreeExpression' for 'Next GEM 3' Gene Expression v3', 'antibodyCapture' for 'Antibody Capture', 'gemXSingleThreeExpression' for 'GEM-X 3' Gene Expression v4'. Always use the NAME value, not the TEXT description."
         }
       },
       required: ["project_id", "fastq_id", "library_type"]
     }
   },
-
   // File Management Tools
   {
     name: "list_project_files",
