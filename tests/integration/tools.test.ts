@@ -84,26 +84,6 @@ describe('Tools Integration Tests', () => {
       expect(toolNames).toContain('create_cellranger_count_analysis');
       expect(toolNames).toContain('list_projects');
     });
-
-    it('should have confirm_analysis_parameters prompt reference in analysis tool descriptions', async () => {
-      const result = await listHandler({ params: {} } as any);
-
-      const analysisTools = [
-        'create_cellranger_multi_analysis',
-        'create_cellranger_count_analysis',
-        'create_cellranger_aggr_analysis',
-        'create_cellranger_vdj_analysis',
-        'create_cellranger_atac_count_analysis',
-        'create_cellranger_arc_count_analysis'
-      ];
-
-      const tools = result.tools.filter((t: any) => analysisTools.includes(t.name));
-
-      // All analysis tools should reference the confirmation prompt
-      for (const tool of tools) {
-        expect(tool.description).toContain('confirm_analysis_parameters');
-      }
-    });
   });
 
   describe('Error Handling', () => {

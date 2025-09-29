@@ -39,7 +39,7 @@ export function createServer() {
   // Register prompts list handler
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
     return {
-      prompts: PROMPT_DEFINITIONS
+      prompts: [] //PROMPT_DEFINITIONS // Hiding prompts for now untill we have a better use case (e.g. analysis)
     };
   });
 
