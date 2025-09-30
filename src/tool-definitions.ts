@@ -26,15 +26,23 @@ export const TOOL_DEFINITIONS = [
 
   // Analysis Tools
   {
+    name: "get_multi_csv_config_spec",
+    description: "Get the CSV configuration specification for Cell Ranger multi analysis. IMPORTANT: Always use this tool BEFORE creating a csv file to use with multi analysis to understand the correct CSV format for 10x Cloud (which differs from Cell Ranger CLI format). Returns detailed format requirements, field descriptions, and examples",
+    inputSchema: {
+      type: "object",
+      properties: {}
+    }
+  },
+  {
     name: "create_cellranger_multi_analysis",
-    description: "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
+    description: "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
         analysis_name: { type: "string", description: "Name of the analysis to create" },
         csv_path: {
           type: "string",
-          description: "Path to the multi config CSV file that defines the analysis parameters. Specification can be found at https://www.10xgenomics.com/support/software/cell-ranger/latest/analysis/inputs/cr-multi-config-csv-opts"
+          description: "Path to the multi config CSV file. CRITICAL: if you need to generate the file, you must use 'get_multi_csv_config_spec' tool to get the correct format specification and examples."
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],
