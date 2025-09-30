@@ -3,6 +3,7 @@ import { CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import { txgCli } from './txg-cli-manager.js';
 import { toResponse, toAnalysisResponse, wrapResponse } from './middleware.js';
+import { getMultiCsvConfigSpec } from './multi-csv-spec.js';
 
 export function registerTools(server: Server) {
   // Register the tool call handler
@@ -17,6 +18,16 @@ export function registerTools(server: Server) {
         return wrapResponse(toResponse(await txgCli.runCommand(['auth', 'verify'])));
 
       // --- Analysis Tools ---
+      case 'get_multi_csv_config_spec': {
+        const spec = getMultiCsvConfigSpec();
+        return {
+          content: [{
+            type: 'text',
+            text: JSON.stringify(spec, null, 2)
+          }]
+        };
+      }
+
       case 'create_cellranger_multi_analysis': {
         const schema = z.object({
           analysis_name: z.string().describe("Name of the analysis to create"),
