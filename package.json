@@ -6,6 +6,7 @@
   "main": "server/index.js",
   "scripts": {
     "build": "tsc",
+    "build:prod": "tsc -p tsconfig.prod.json",
     "start": "./tasks.sh run-server",
     "clean": "rm -rf build/server",
     "pack": "./tasks.sh pack",
@@ -16,7 +17,7 @@
     "test:integration": "jest tests/integration",
     "generate-capabilities": "./tasks.sh generate-capabilities",
     "download-bin": "./tasks.sh download-bin",
-    "release": "npm run clean && npm run build && npm run test && npm run generate-capabilities && npm run pack"
+    "release": "npm run clean && npm run build:prod && npm run test && npm run generate-capabilities && npm run pack"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
