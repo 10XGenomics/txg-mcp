@@ -2,7 +2,7 @@ const PIPELINE_SELECTION_GUIDANCE =
   "Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type.";
 
 const ANALYSIS_CONFIRMATION_INSTRUCTION =
-  "CRITICAL: Always explicitly confirm parameters before creating analysis (expensive, hours-long compute). " +
+  "CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). " +
   "Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'";
 
 export const TOOL_DEFINITIONS = [
@@ -468,6 +468,12 @@ export const TOOL_DEFINITIONS = [
           default: null,
           description: "New description for the reference",
         },
+        organism: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description:
+            "Scientific name of the organism followed by the common name in parentheses (optional)",
+        },
       },
       required: ["reference_id"],
     },
@@ -484,11 +490,6 @@ export const TOOL_DEFINITIONS = [
             "Path to reference file: can be a cellranger mkref/mkvdjref folder, .tar.gz file, or feature/probeset .CSV file",
         },
         name: { type: "string", description: "Name for the custom reference" },
-        organism: {
-          type: "string",
-          description:
-            "Organism name (e.g., 'Human', 'Mouse', or custom species name)",
-        },
       },
       required: ["file_path", "name", "organism"],
     },
