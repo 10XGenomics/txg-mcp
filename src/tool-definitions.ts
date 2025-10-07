@@ -2,8 +2,15 @@ const PIPELINE_SELECTION_GUIDANCE =
   "Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type.";
 
 const ANALYSIS_CONFIRMATION_INSTRUCTION =
-  "CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). " +
+  "CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, long-running compute). " +
   "Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'";
+
+const ACCEPT_PAYMENT_PARAMETER = {
+  anyOf: [{ type: "string" }, { type: "null" }],
+  default: null,
+  description:
+    'CRITICAL: Do NOT set to "true" unless user has EXPLICITLY confirmed they accept the charges. When set to "false", omitted, or any other value, the command will fail with a cost estimate if payment is required. Only set to "true" after user explicitly agrees to the charges shown in the error message.',
+};
 
 export const TOOL_DEFINITIONS = [
   // Core Tools
@@ -76,6 +83,7 @@ export const TOOL_DEFINITIONS = [
           default: null,
           description: "Specific Cell Ranger version to use (e.g., '9.0.1')",
         },
+        accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
       required: ["analysis_name", "csv_path"],
     },
@@ -127,6 +135,7 @@ export const TOOL_DEFINITIONS = [
           description:
             "Assay chemistry version (default: 'auto' for automatic detection)",
         },
+        accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
       required: ["analysis_name", "transcriptome", "fastqs"],
     },
@@ -168,6 +177,7 @@ export const TOOL_DEFINITIONS = [
           default: null,
           description: "Description for the aggregation analysis",
         },
+        accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
       required: ["analysis_name", "csv_path"],
     },
@@ -480,7 +490,8 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: "upload_reference",
-    description: "Uploads a custom reference from a local file path.",
+    description:
+      "Uploads a custom reference from a local file path. Depending on size this can take a while.",
     inputSchema: {
       type: "object",
       properties: {
@@ -491,7 +502,7 @@ export const TOOL_DEFINITIONS = [
         },
         name: { type: "string", description: "Name for the custom reference" },
       },
-      required: ["file_path", "name", "organism"],
+      required: ["file_path", "name"],
     },
   },
 ];

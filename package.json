@@ -1,6 +1,6 @@
 {
   "name": "10x-genomics-mcp",
-  "version": "1.0.0",
+  "version": "0.4.0",
   "description": "10x Genomics Cloud Analysis MCP Server",
   "type": "module",
   "main": "server/index.js",
@@ -16,7 +16,7 @@
     "lint": "eslint --cache --cache-location ./.cache/.eslint-cache",
     "lint:fix": "eslint --cache --cache-location ./.cache/.eslint-cache --fix",
     "pack": "./tasks.sh pack",
-    "release": "npm run clean && npm run lint && npm run format && npm run build:prod && npm run test && npm run generate-capabilities && npm run pack",
+    "release": "npm run clean && npm run lint:fix && npm run format:fix && npm run build:prod && npm run test && npm run generate-capabilities && npm run pack",
     "start": "./tasks.sh run-server",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:coverage": "jest --coverage",

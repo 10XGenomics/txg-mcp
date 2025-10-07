@@ -1,7 +1,7 @@
 {
   "server_info": {
     "name": "10x-genomics",
-    "version": "1.0.0"
+    "version": "0.4.0"
   },
   "protocol_version": "2024-11-05",
   "capabilities": {
@@ -36,7 +36,7 @@
     },
     {
       "name": "create_cellranger_multi_analysis",
-      "description": "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, long-running compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -95,6 +95,18 @@
             ],
             "default": null,
             "description": "Specific Cell Ranger version to use (e.g., '9.0.1')"
+          },
+          "accept_payment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "CRITICAL: Do NOT set to \"true\" unless user has EXPLICITLY confirmed they accept the charges. When set to \"false\", omitted, or any other value, the command will fail with a cost estimate if payment is required. Only set to \"true\" after user explicitly agrees to the charges shown in the error message."
           }
         },
         "required": [
@@ -105,7 +117,7 @@
     },
     {
       "name": "create_cellranger_count_analysis",
-      "description": "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, long-running compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -171,6 +183,18 @@
             ],
             "default": "auto",
             "description": "Assay chemistry version (default: 'auto' for automatic detection)"
+          },
+          "accept_payment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "CRITICAL: Do NOT set to \"true\" unless user has EXPLICITLY confirmed they accept the charges. When set to \"false\", omitted, or any other value, the command will fail with a cost estimate if payment is required. Only set to \"true\" after user explicitly agrees to the charges shown in the error message."
           }
         },
         "required": [
@@ -182,7 +206,7 @@
     },
     {
       "name": "create_cellranger_aggr_analysis",
-      "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, long-running compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -241,6 +265,18 @@
             ],
             "default": null,
             "description": "Description for the aggregation analysis"
+          },
+          "accept_payment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "CRITICAL: Do NOT set to \"true\" unless user has EXPLICITLY confirmed they accept the charges. When set to \"false\", omitted, or any other value, the command will fail with a cost estimate if payment is required. Only set to \"true\" after user explicitly agrees to the charges shown in the error message."
           }
         },
         "required": [
@@ -630,7 +666,7 @@
     },
     {
       "name": "upload_reference",
-      "description": "Uploads a custom reference from a local file path.",
+      "description": "Uploads a custom reference from a local file path. Depending on size this can take a while.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -645,8 +681,7 @@
         },
         "required": [
           "file_path",
-          "name",
-          "organism"
+          "name"
         ]
       }
     }

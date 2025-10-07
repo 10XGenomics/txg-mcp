@@ -11,6 +11,9 @@ export interface CommandResult {
   fullCommand: string;
 }
 
+// Default timeout for CLI commands (1 hour)
+export const LONG_OPERATION_TIMEOUT = 3600000; // 1 hour in milliseconds
+
 class TxgCliManager {
   private txgPath: string;
   private readonly platform: string;
@@ -82,7 +85,7 @@ class TxgCliManager {
 
   async runCommand(
     args: string[],
-    timeout: number = 600000,
+    timeout: number = LONG_OPERATION_TIMEOUT,
   ): Promise<CommandResult> {
     // In test mode, return mock result
     if (process.env.NODE_ENV === "test") {
@@ -104,6 +107,11 @@ class TxgCliManager {
       fullArgs.push("--tags", "mcpb");
 
       const fullCommand = `${this.txgPath} ${fullArgs.join(" ")}`;
+
+      // Log command execution to stderr (MCP best practice for stdio transport)
+      console.error(
+        `[TXG CLI] Executing: ${fullCommand.replace(/--access-token\s+\S+/, "--access-token ***")}`,
+      );
 
       const child = spawn(this.txgPath, fullArgs, {
         timeout: timeout,
@@ -138,10 +146,19 @@ class TxgCliManager {
       child.on("close", (code) => {
         clearTimeout(timeoutId);
         if (!timedOut) {
+          const exitCode = code || 0;
+
+          // Log command result to stderr
+          if (exitCode === 0) {
+            console.error(`[TXG CLI] Command succeeded (exit code: 0)`);
+          } else {
+            console.error(`[TXG CLI] Command failed (exit code: ${exitCode})`);
+          }
+
           resolve({
             stdout: stdout.trim(),
             stderr: stderr.trim(),
-            exitCode: code || 0,
+            exitCode: exitCode,
             fullCommand,
           });
         }
