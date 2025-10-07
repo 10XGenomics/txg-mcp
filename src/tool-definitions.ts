@@ -12,136 +12,165 @@ export const TOOL_DEFINITIONS = [
     description: "Get the version of the TXG CLI tool.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     name: "verify_auth",
-    description: "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud Analysis.",
+    description:
+      "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud Analysis.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
 
   // Analysis Tools
   {
     name: "get_multi_csv_config_spec",
-    description: "Get the CSV configuration specification for Cell Ranger multi analysis. IMPORTANT: Always use this tool BEFORE creating a csv file to use with multi analysis to understand the correct CSV format for 10x Cloud (which differs from Cell Ranger CLI format). Returns detailed format requirements, field descriptions, and examples",
+    description:
+      "Get the CSV configuration specification for Cell Ranger multi analysis. IMPORTANT: Always use this tool BEFORE creating a csv file to use with multi analysis to understand the correct CSV format for 10x Cloud (which differs from Cell Ranger CLI format). Returns detailed format requirements, field descriptions, and examples",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     name: "create_cellranger_multi_analysis",
-    description: "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
+    description:
+      "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. " +
+      PIPELINE_SELECTION_GUIDANCE +
+      " " +
+      ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
-        analysis_name: { type: "string", description: "Name of the analysis to create" },
+        analysis_name: {
+          type: "string",
+          description: "Name of the analysis to create",
+        },
         csv_path: {
           type: "string",
-          description: "Path to the multi config CSV file. CRITICAL: if you need to generate the file, you must use 'get_multi_csv_config_spec' tool to get the correct format specification and examples."
+          description:
+            "Path to the multi config CSV file. CRITICAL: if you need to generate the file, you must use 'get_multi_csv_config_spec' tool to get the correct format specification and examples.",
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "ID of existing project to create the analysis in. Either project_id or project_name must be specified"
+          description:
+            "ID of existing project to create the analysis in. Either project_id or project_name must be specified",
         },
         project_name: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Name of a new project to create for this analysis (alternative to project_id)"
+          description:
+            "Name of a new project to create for this analysis (alternative to project_id)",
         },
         description: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Analysis description"
+          description: "Analysis description",
         },
         product_version: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Specific Cell Ranger version to use (e.g., '9.0.1')"
-        }
+          description: "Specific Cell Ranger version to use (e.g., '9.0.1')",
+        },
       },
-      required: ["analysis_name", "csv_path"]
-    }
+      required: ["analysis_name", "csv_path"],
+    },
   },
   {
     name: "create_cellranger_count_analysis",
-    description: "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. " + PIPELINE_SELECTION_GUIDANCE + " " + ANALYSIS_CONFIRMATION_INSTRUCTION,
+    description:
+      "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. " +
+      PIPELINE_SELECTION_GUIDANCE +
+      " " +
+      ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
-        analysis_name: { type: "string", description: "Name of the analysis to create" },
+        analysis_name: {
+          type: "string",
+          description: "Name of the analysis to create",
+        },
         transcriptome: {
           type: "string",
-          description: "Reference transcriptome to use (e.g., 'refdata-cellranger-GRCh38-2024-A', or custom reference ID). Use the 'list_custom_references' or 'list_prebuilt_references' tools to find available references."
+          description:
+            "Reference transcriptome to use (e.g., 'refdata-cellranger-GRCh38-2024-A', or custom reference ID). Use the 'list_custom_references' or 'list_prebuilt_references' tools to find available references.",
         },
         fastqs: {
           type: "array",
           items: { type: "string" },
-          description: "List of FASTQ file paths or FASTQ set IDs to analyze. Can be local paths or previously uploaded FASTQ set IDs in the format txg://fastqs/<filename> or txg://fastqs/<fastq_uuid>"
+          description:
+            "List of FASTQ file paths or FASTQ set IDs to analyze. Can be local paths or previously uploaded FASTQ set IDs in the format txg://fastqs/<filename> or txg://fastqs/<fastq_uuid>",
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "ID of existing project to create the analysis in"
+          description: "ID of existing project to create the analysis in",
         },
         project_name: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Name of a new project to create for this analysis (alternative to project_id)"
+          description:
+            "Name of a new project to create for this analysis (alternative to project_id)",
         },
         expect_cells: {
           anyOf: [{ type: "integer" }, { type: "null" }],
           default: null,
-          description: "Expected number of cells (overrides auto-detection)"
+          description: "Expected number of cells (overrides auto-detection)",
         },
         chemistry: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: "auto",
-          description: "Assay chemistry version (default: 'auto' for automatic detection)"
-        }
+          description:
+            "Assay chemistry version (default: 'auto' for automatic detection)",
+        },
       },
-      required: ["analysis_name", "transcriptome", "fastqs"]
-    }
+      required: ["analysis_name", "transcriptome", "fastqs"],
+    },
   },
   {
     name: "create_cellranger_aggr_analysis",
-    description: "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. " + ANALYSIS_CONFIRMATION_INSTRUCTION,
+    description:
+      "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. " +
+      ANALYSIS_CONFIRMATION_INSTRUCTION,
     inputSchema: {
       type: "object",
       properties: {
-        analysis_name: { type: "string", description: "Name of the aggregation analysis" },
+        analysis_name: {
+          type: "string",
+          description: "Name of the aggregation analysis",
+        },
         csv_path: {
           type: "string",
-          description: "Path to CSV file listing the analysis IDs to aggregate"
+          description: "Path to CSV file listing the analysis IDs to aggregate",
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "ID of existing project to create the analysis in"
+          description: "ID of existing project to create the analysis in",
         },
         project_name: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Name of a new project to create for this analysis (alternative to project_id)"
+          description:
+            "Name of a new project to create for this analysis (alternative to project_id)",
         },
         normalize: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: "mapped",
-          description: "Normalization method: 'mapped' (default) or 'none'"
+          description: "Normalization method: 'mapped' (default) or 'none'",
         },
         description: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Description for the aggregation analysis"
-        }
+          description: "Description for the aggregation analysis",
+        },
       },
-      required: ["analysis_name", "csv_path"]
-    }
+      required: ["analysis_name", "csv_path"],
+    },
   },
   {
     name: "list_analyses",
@@ -149,10 +178,13 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to list analyses from" }
+        project_id: {
+          type: "string",
+          description: "Project ID to list analyses from",
+        },
       },
-      required: ["project_id"]
-    }
+      required: ["project_id"],
+    },
   },
   {
     name: "get_analysis_details",
@@ -160,10 +192,13 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        analysis_id: { type: "string", description: "Analysis ID to get details for" }
+        analysis_id: {
+          type: "string",
+          description: "Analysis ID to get details for",
+        },
       },
-      required: ["analysis_id"]
-    }
+      required: ["analysis_id"],
+    },
   },
   {
     name: "list_analysis_files",
@@ -171,22 +206,32 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        analysis_id: { type: "string", description: "Analysis ID to list files from" }
+        analysis_id: {
+          type: "string",
+          description: "Analysis ID to list files from",
+        },
       },
-      required: ["analysis_id"]
-    }
+      required: ["analysis_id"],
+    },
   },
   {
     name: "download_analysis_files",
-    description: "Downloads all files from an analysis to a specified local path.",
+    description:
+      "Downloads all files from an analysis to a specified local path.",
     inputSchema: {
       type: "object",
       properties: {
-        analysis_id: { type: "string", description: "Analysis ID to download files from" },
-        output_path: { type: "string", description: "Local directory path where files will be saved" }
+        analysis_id: {
+          type: "string",
+          description: "Analysis ID to download files from",
+        },
+        output_path: {
+          type: "string",
+          description: "Local directory path where files will be saved",
+        },
       },
-      required: ["analysis_id", "output_path"]
-    }
+      required: ["analysis_id", "output_path"],
+    },
   },
 
   // Annotation Tools
@@ -195,8 +240,8 @@ export const TOOL_DEFINITIONS = [
     description: "Lists available cell annotation models.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
 
   // FASTQ Tools
@@ -206,52 +251,69 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to list FASTQ files from" }
+        project_id: {
+          type: "string",
+          description: "Project ID to list FASTQ files from",
+        },
       },
-      required: ["project_id"]
-    }
+      required: ["project_id"],
+    },
   },
   {
     name: "upload_fastqs",
-    description: "Uploads FASTQ files from a local path to a project. This can take a while depending on file size and network speed.",
+    description:
+      "Uploads FASTQ files from a local path to a project. This can take a while depending on file size and network speed.",
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to upload FASTQ files to" },
+        project_id: {
+          type: "string",
+          description: "Project ID to upload FASTQ files to",
+        },
         file_path: {
           type: "string",
-          description: "Path to FASTQ file(s) or directory containing FASTQ files. Files must follow Illumina naming convention (e.g., sample_S1_L001_R1_001.fastq.gz)"
-        }
+          description:
+            "Path to FASTQ file(s) or directory containing FASTQ files. Files must follow Illumina naming convention (e.g., sample_S1_L001_R1_001.fastq.gz)",
+        },
       },
-      required: ["project_id", "file_path"]
-    }
+      required: ["project_id", "file_path"],
+    },
   },
   {
     name: "list_libraries",
-    description: "List all available FASTQ library types. Returns both user-friendly names (TEXT) and internal identifiers (NAME) for each library type.",
+    description:
+      "List all available FASTQ library types. Returns both user-friendly names (TEXT) and internal identifiers (NAME) for each library type.",
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to list libraries from" }
+        project_id: {
+          type: "string",
+          description: "Project ID to list libraries from",
+        },
       },
-      required: ["project_id"]
-    }
+      required: ["project_id"],
+    },
   },
   {
     name: "set_library",
-    description: "Set the library type for FASTQ sets. Use the internal NAME identifier (e.g., 'singleThreeExpression', 'antibodyCapture') not the user-friendly TEXT description. When discussing with users, reference the friendly names like 'Next GEM 3' Gene Expression v3' or 'Antibody Capture', but always pass the corresponding NAME value to this tool.",
+    description:
+      "Set the library type for FASTQ sets. Use the internal NAME identifier (e.g., 'singleThreeExpression', 'antibodyCapture') not the user-friendly TEXT description. When discussing with users, reference the friendly names like 'Next GEM 3' Gene Expression v3' or 'Antibody Capture', but always pass the corresponding NAME value to this tool.",
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID containing the FASTQ set" },
+        project_id: {
+          type: "string",
+          description: "Project ID containing the FASTQ set",
+        },
         fastq_id: { type: "string", description: "FASTQ set ID to update" },
         library_type: {
           type: "string",
-          description: "Internal library type identifier (NAME field from list_libraries). Examples: 'singleThreeExpression' for 'Next GEM 3' Gene Expression v3', 'antibodyCapture' for 'Antibody Capture', 'gemXSingleThreeExpression' for 'GEM-X 3' Gene Expression v4'. Always use the NAME value, not the TEXT description."
-        }
+          description:
+            "Internal library type identifier (NAME field from list_libraries). Examples: 'singleThreeExpression' for 'Next GEM 3' Gene Expression v3', 'antibodyCapture' for 'Antibody Capture', 'gemXSingleThreeExpression' for 'GEM-X 3' Gene Expression v4'. Always use the NAME value, not the TEXT description.",
+        },
       },
-      required: ["project_id", "fastq_id", "library_type"]
-    }
+      required: ["project_id", "fastq_id", "library_type"],
+    },
   },
   // File Management Tools
   {
@@ -260,10 +322,13 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to list files from" }
+        project_id: {
+          type: "string",
+          description: "Project ID to list files from",
+        },
       },
-      required: ["project_id"]
-    }
+      required: ["project_id"],
+    },
   },
   {
     name: "upload_project_file",
@@ -271,11 +336,17 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID to upload file to" },
-        file_path: { type: "string", description: "Path to the local file to upload" }
+        project_id: {
+          type: "string",
+          description: "Project ID to upload file to",
+        },
+        file_path: {
+          type: "string",
+          description: "Path to the local file to upload",
+        },
       },
-      required: ["project_id", "file_path"]
-    }
+      required: ["project_id", "file_path"],
+    },
   },
   {
     name: "download_project_file",
@@ -283,15 +354,22 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        project_id: { type: "string", description: "Project ID containing the file" },
+        project_id: {
+          type: "string",
+          description: "Project ID containing the file",
+        },
         file_id: {
           type: "string",
-          description: "IDs of the files to download. Use the 'list_project_files' tool to find file IDs."
+          description:
+            "IDs of the files to download. Use the 'list_project_files' tool to find file IDs.",
         },
-        output_path: { type: "string", description: "Local directory path where file will be saved" }
+        output_path: {
+          type: "string",
+          description: "Local directory path where file will be saved",
+        },
       },
-      required: ["project_id", "file_name", "output_path"]
-    }
+      required: ["project_id", "file_name", "output_path"],
+    },
   },
 
   // Project Management Tools
@@ -300,12 +378,13 @@ export const TOOL_DEFINITIONS = [
     description: "Lists all available projects.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     name: "create_project",
-    description: "Creates a new project with a given name and optional description.",
+    description:
+      "Creates a new project with a given name and optional description.",
     inputSchema: {
       type: "object",
       properties: {
@@ -313,11 +392,11 @@ export const TOOL_DEFINITIONS = [
         description: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "Optional description for the project"
-        }
+          description: "Optional description for the project",
+        },
       },
-      required: ["name"]
-    }
+      required: ["name"],
+    },
   },
   {
     name: "update_project",
@@ -329,16 +408,16 @@ export const TOOL_DEFINITIONS = [
         name: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "New name for the project"
+          description: "New name for the project",
         },
         description: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "New description for the project"
-        }
+          description: "New description for the project",
+        },
       },
-      required: ["project_id"]
-    }
+      required: ["project_id"],
+    },
   },
 
   // Reference Management Tools
@@ -347,16 +426,16 @@ export const TOOL_DEFINITIONS = [
     description: "Lists all custom references.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     name: "list_prebuilt_references",
     description: "Lists all prebuilt references.",
     inputSchema: {
       type: "object",
-      properties: {}
-    }
+      properties: {},
+    },
   },
   {
     name: "get_reference",
@@ -364,10 +443,13 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {
-        reference_id: { type: "string", description: "Reference ID to get details for" }
+        reference_id: {
+          type: "string",
+          description: "Reference ID to get details for",
+        },
       },
-      required: ["reference_id"]
-    }
+      required: ["reference_id"],
+    },
   },
   {
     name: "update_reference",
@@ -379,16 +461,16 @@ export const TOOL_DEFINITIONS = [
         name: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "New name for the reference"
+          description: "New name for the reference",
         },
         description: {
           anyOf: [{ type: "string" }, { type: "null" }],
           default: null,
-          description: "New description for the reference"
-        }
+          description: "New description for the reference",
+        },
       },
-      required: ["reference_id"]
-    }
+      required: ["reference_id"],
+    },
   },
   {
     name: "upload_reference",
@@ -398,15 +480,17 @@ export const TOOL_DEFINITIONS = [
       properties: {
         file_path: {
           type: "string",
-          description: "Path to reference file: can be a cellranger mkref/mkvdjref folder, .tar.gz file, or feature/probeset .CSV file"
+          description:
+            "Path to reference file: can be a cellranger mkref/mkvdjref folder, .tar.gz file, or feature/probeset .CSV file",
         },
         name: { type: "string", description: "Name for the custom reference" },
         organism: {
           type: "string",
-          description: "Organism name (e.g., 'Human', 'Mouse', or custom species name)"
-        }
+          description:
+            "Organism name (e.g., 'Human', 'Mouse', or custom species name)",
+        },
       },
-      required: ["file_path", "name", "organism"]
-    }
-  }
+      required: ["file_path", "name", "organism"],
+    },
+  },
 ];

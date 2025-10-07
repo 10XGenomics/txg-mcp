@@ -13,6 +13,7 @@
 ## Installation
 
 ### Prerequisites
+
 - Node.js 18+ (comes with Claude Desktop)
 - Access to 10x Genomics Cloud Analysis platform
 - Valid 10x Genomics access token
@@ -49,9 +50,11 @@ npm run release
 ```
 
 #### Access Token Management
+
 The server requires a 10x Genomics access token. There are several ways to provide it:
 
 1. **Pass as argument** (saved for future use):
+
    ```bash
    npm run start YOUR_ACCESS_TOKEN
    ```
@@ -62,8 +65,6 @@ The server requires a 10x Genomics access token. There are several ways to provi
    ```
 
 The token is automatically saved to `credentials.txt` (gitignored) when provided as an argument.
-
-
 
 ## Project Structure
 
@@ -102,5 +103,6 @@ The token is automatically saved to `credentials.txt` (gitignored) when provided
 5. Responses are formatted and returned to Claude
 
 ## Claude Desktop Extension Documentation
+
 - **Documentation**: [Anthropic Desktop Extensions Documentation](https://www.anthropic.com/engineering/desktop-extensions)
 - **MCP Protocol**: [Model Context Protocol Specification](https://modelcontextprotocol.io/)

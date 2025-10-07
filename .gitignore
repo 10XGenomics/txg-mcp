@@ -5,3 +5,6 @@ node_modules/
 *.mcpb
 *.zip
 credentials.txt
+
+# Linting and formatting caches
+.cache/

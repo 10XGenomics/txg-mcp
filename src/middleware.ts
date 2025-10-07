@@ -1,4 +1,4 @@
-import { CommandResult } from './txg-cli-manager.js';
+import type { CommandResult } from "./txg-cli-manager.js";
 
 export interface Response {
   content: string;
@@ -21,10 +21,10 @@ export function wrapResponse(response: Response | AnalysisResponse) {
   return {
     content: [
       {
-        type: 'text',
-        text: JSON.stringify(response)
-      }
-    ]
+        type: "text",
+        text: JSON.stringify(response),
+      },
+    ],
   };
 }
 
@@ -35,10 +35,10 @@ export function toResponse(result: CommandResult): Response {
 
   return {
     content: success ? (result.stdout || result.stderr).trim() : result.stdout,
-    error: success ? '' : result.stderr,
+    error: success ? "" : result.stderr,
     returncode: result.exitCode,
     success: success,
-    fullCommand: result.fullCommand
+    fullCommand: result.fullCommand,
   };
 }
 
@@ -48,8 +48,10 @@ export function toAnalysisResponse(result: CommandResult): AnalysisResponse {
   if (response.success) {
     return {
       ...response,
-      message: "Analysis started successfully. Expected completion time can be several hours depending on data size. The job will continue running even if this conversation ends.",
-      next_steps: "Use 'get_analysis_details' tool to check progress. You will receive an email notification when the analysis is complete."
+      message:
+        "Analysis started successfully. Expected completion time can be several hours depending on data size. The job will continue running even if this conversation ends.",
+      next_steps:
+        "Use 'get_analysis_details' tool to check progress. You will receive an email notification when the analysis is complete.",
     };
   }
 

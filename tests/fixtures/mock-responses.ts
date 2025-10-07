@@ -14,7 +14,7 @@ export const AUTH_SUCCESS: CommandResult = {
   stdout: "User authenticated successfully\nemail: user@example.com",
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg auth verify"
+  fullCommand: "txg auth verify",
 };
 
 // Failed auth verification
@@ -22,7 +22,7 @@ export const AUTH_FAILURE: CommandResult = {
   stdout: "",
   stderr: "Error: Authentication failed. Token is invalid or expired.",
   exitCode: 1,
-  fullCommand: "txg auth verify"
+  fullCommand: "txg auth verify",
 };
 
 // Successful analysis creation
@@ -34,7 +34,8 @@ Project ID: project_67890
 Status: PENDING`,
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg analyses create cellranger count --analysis-name test --transcriptome GRCh38"
+  fullCommand:
+    "txg analyses create cellranger count --analysis-name test --transcriptome GRCh38",
 };
 
 // Version check
@@ -42,7 +43,7 @@ export const VERSION_INFO: CommandResult = {
   stdout: "txg version 1.2.3",
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg --version"
+  fullCommand: "txg --version",
 };
 
 // List projects success
@@ -63,7 +64,7 @@ export const PROJECTS_LIST: CommandResult = {
 ]`,
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg projects list"
+  fullCommand: "txg projects list",
 };
 
 // Empty list
@@ -71,7 +72,7 @@ export const EMPTY_LIST: CommandResult = {
   stdout: "[]",
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg projects list"
+  fullCommand: "txg projects list",
 };
 
 // Command error
@@ -79,16 +80,15 @@ export const INVALID_COMMAND: CommandResult = {
   stdout: "",
   stderr: "Error: Invalid command or missing parameters",
   exitCode: 2,
-  fullCommand: "txg invalid command"
+  fullCommand: "txg invalid command",
 };
-
 
 // Warning with success
 export const SUCCESS_WITH_WARNING: CommandResult = {
   stdout: "Operation completed",
   stderr: "Warning: This is a warning message",
   exitCode: 0,
-  fullCommand: "txg some command"
+  fullCommand: "txg some command",
 };
 
 // Multi-line output
@@ -96,13 +96,13 @@ export const MULTILINE_OUTPUT: CommandResult = {
   stdout: "Line 1\nLine 2\nLine 3\nLine 4",
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg test"
+  fullCommand: "txg test",
 };
 
 // Special characters
 export const SPECIAL_CHARS_OUTPUT: CommandResult = {
-  stdout: 'Result with "quotes" and \'apostrophes\' and $pecial ch@rs!',
+  stdout: "Result with \"quotes\" and 'apostrophes' and $pecial ch@rs!",
   stderr: "",
   exitCode: 0,
-  fullCommand: "txg test"
+  fullCommand: "txg test",
 };

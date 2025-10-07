@@ -1,21 +1,21 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { GetPromptRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { GetPromptRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 
 export function registerPrompts(server: Server) {
   server.setRequestHandler(GetPromptRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
-      if (name === 'confirm_analysis_parameters') {
-        const analysisType = args?.analysis_type || 'unknown';
-        const parameters = args?.parameters || 'No parameters provided';
+    if (name === "confirm_analysis_parameters") {
+      const analysisType = args?.analysis_type || "unknown";
+      const parameters = args?.parameters || "No parameters provided";
 
-        return {
-          messages: [
-            {
-              role: 'user',
-              content: {
-                type: 'text',
-                text: `You are about to create a ${analysisType} analysis with the following parameters:
+      return {
+        messages: [
+          {
+            role: "user",
+            content: {
+              type: "text",
+              text: `You are about to create a ${analysisType} analysis with the following parameters:
 
 ${parameters}
 
@@ -54,32 +54,33 @@ IMPORTANT INSTRUCTIONS FOR THE ASSISTANT:
    - If user mentions production/important data: Always confirm regardless of batch mode
    - If user seems experienced (provides detailed parameters upfront): Can be less verbose
 
-Remember: It's better to confirm once and avoid hours of wasted compute than to proceed with wrong parameters.`
-              }
-            }
-          ]
-        };
-      }
+Remember: It's better to confirm once and avoid hours of wasted compute than to proceed with wrong parameters.`,
+            },
+          },
+        ],
+      };
+    }
 
-      throw new Error(`Unknown prompt: ${name}`);
+    throw new Error(`Unknown prompt: ${name}`);
   });
 }
 
 export const PROMPT_DEFINITIONS = [
   {
     name: "confirm_analysis_parameters",
-    description: "Prompt to help LLMs confirm analysis parameters with users before creating an analysis. Always use this prompt before calling any create_cellranger_* tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
+    description:
+      "Prompt to help LLMs confirm analysis parameters with users before creating an analysis. Always use this prompt before calling any create_cellranger_* tool to verify parameters with the user, unless explicitly told not to confirm for batch operations.",
     arguments: [
       {
         name: "analysis_type",
         description: "Type of analysis being created",
-        required: true
+        required: true,
       },
       {
         name: "parameters",
         description: "Parameters for the analysis",
-        required: true
-      }
-    ]
-  }
+        required: true,
+      },
+    ],
+  },
 ];
