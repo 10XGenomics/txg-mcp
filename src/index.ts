@@ -1,52 +1,50 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
-  CallToolRequestSchema,
   ListToolsRequestSchema,
   ListPromptsRequestSchema,
-  GetPromptRequestSchema,
   ListResourcesRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
-import { registerTools } from './tools.js';
-import { registerPrompts, PROMPT_DEFINITIONS } from './prompts.js';
-import { TOOL_DEFINITIONS } from './tool-definitions.js';
+} from "@modelcontextprotocol/sdk/types.js";
+import { registerTools } from "./tools.js";
+import { registerPrompts } from "./prompts.js";
+import { TOOL_DEFINITIONS } from "./tool-definitions.js";
 
 // Factory function for creating server (useful for testing)
 export function createServer() {
   const server = new Server(
     {
-      name: '10x-genomics',
-      version: '1.0.0',
+      name: "10x-genomics",
+      version: "1.0.0",
     },
     {
       capabilities: {
         tools: {},
         prompts: {},
-        resources: {}
+        resources: {},
       },
-    }
+    },
   );
 
   // Register tools list handler
   server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
-      tools: TOOL_DEFINITIONS
+      tools: TOOL_DEFINITIONS,
     };
   });
 
   // Register prompts list handler
   server.setRequestHandler(ListPromptsRequestSchema, async () => {
     return {
-      prompts: [] //PROMPT_DEFINITIONS // Hiding prompts for now untill we have a better use case (e.g. analysis)
+      prompts: [], //PROMPT_DEFINITIONS // Hiding prompts for now untill we have a better use case (e.g. analysis)
     };
   });
 
   // Register resources list handler (returns empty array as we don't have resources)
   server.setRequestHandler(ListResourcesRequestSchema, async () => {
     return {
-      resources: []
+      resources: [],
     };
   });
 
@@ -56,23 +54,23 @@ export function createServer() {
 
   // Error handling
   server.onerror = (error) => {
-    console.error('[MCP Error]', error);
+    console.error("[MCP Error]", error);
   };
 
   return server;
 }
 
 // Only run main when not imported (not in test mode)
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   // Validate environment
   if (!process.env.ACCESS_TOKEN) {
-    console.error('Warning: ACCESS_TOKEN environment variable not set');
+    console.error("Warning: ACCESS_TOKEN environment variable not set");
   }
 
   // Create server instance
   const server = createServer();
 
-  process.on('SIGINT', async () => {
+  process.on("SIGINT", async () => {
     await server.close();
     process.exit(0);
   });
@@ -81,11 +79,11 @@ if (process.env.NODE_ENV !== 'test') {
   const main = async () => {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error('10x Genomics MCP Server running...');
+    console.error("10x Genomics MCP Server running...");
   };
 
   main().catch((error) => {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   });
 }

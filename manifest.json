@@ -17,9 +17,7 @@
     "entry_point": "server/index.js",
     "mcp_config": {
       "command": "node",
-      "args": [
-        "${__dirname}/server/index.js"
-      ],
+      "args": ["${__dirname}/server/index.js"],
       "env": {
         "ACCESS_TOKEN": "${user_config.access_token}"
       }

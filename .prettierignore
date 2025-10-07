@@ -1,0 +1,28 @@
+# Build outputs
+build/
+dist/
+
+# Dependencies
+node_modules/
+
+# Cache
+.cache/
+
+# Binaries
+bin/
+
+# Test coverage
+coverage/
+
+# Package files
+package-lock.json
+*.tgz
+
+# Logs
+*.log
+
+# Auto-generated files
+reference/mcp_capabilities_reference.json
+
+# Files with specific formatting requirements
+src/multi-csv-spec.ts
