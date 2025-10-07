@@ -28,6 +28,13 @@ export function wrapResponse(response: Response | AnalysisResponse) {
   };
 }
 
+/**
+ * Redacts the access token from the command string for security.
+ */
+function redactAccessToken(command: string): string {
+  return command.replace(/--access-token\s+\S+/, "--access-token ***");
+}
+
 export function toResponse(result: CommandResult): Response {
   // When command succeeds, treat stderr as additional output, not an error
   // Some CLI tools output success messages to stderr
@@ -38,7 +45,7 @@ export function toResponse(result: CommandResult): Response {
     error: success ? "" : result.stderr,
     returncode: result.exitCode,
     success: success,
-    fullCommand: result.fullCommand,
+    fullCommand: redactAccessToken(result.fullCommand),
   };
 }
 

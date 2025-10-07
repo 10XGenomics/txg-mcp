@@ -358,6 +358,209 @@ describe("Command Building Tests", () => {
     });
   });
 
+  describe("Payment Acceptance", () => {
+    it("should include --accept-payment=false when accept_payment is omitted (count)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test_analysis",
+            transcriptome: "GRCh38",
+            fastqs: ["sample.fastq.gz"],
+            project_id: "project_123",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+
+    it("should include --accept-payment=false when accept_payment is 'false' (count)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test_analysis",
+            transcriptome: "GRCh38",
+            fastqs: ["sample.fastq.gz"],
+            project_id: "project_123",
+            accept_payment: "false",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+
+    it("should include --accept-payment=true when accept_payment is 'true' (count)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test_analysis",
+            transcriptome: "GRCh38",
+            fastqs: ["sample.fastq.gz"],
+            project_id: "project_123",
+            accept_payment: "true",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=true");
+      expect(command).not.toContain("--accept-payment=false");
+    });
+
+    it("should include --accept-payment=false when accept_payment is omitted (multi)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_multi_analysis",
+          arguments: {
+            analysis_name: "multi_test",
+            csv_path: "/path/to/config.csv",
+            project_id: "project_456",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+
+    it("should include --accept-payment=true when accept_payment is 'true' (multi)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_multi_analysis",
+          arguments: {
+            analysis_name: "multi_test",
+            csv_path: "/path/to/config.csv",
+            project_id: "project_456",
+            accept_payment: "true",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=true");
+      expect(command).not.toContain("--accept-payment=false");
+    });
+
+    it("should include --accept-payment=false when accept_payment is omitted (aggr)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_aggr_analysis",
+          arguments: {
+            analysis_name: "aggr_test",
+            csv_path: "/path/to/aggr.csv",
+            project_id: "project_789",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+
+    it("should include --accept-payment=true when accept_payment is 'true' (aggr)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_aggr_analysis",
+          arguments: {
+            analysis_name: "aggr_test",
+            csv_path: "/path/to/aggr.csv",
+            project_id: "project_789",
+            accept_payment: "true",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=true");
+      expect(command).not.toContain("--accept-payment=false");
+    });
+
+    it("should handle any other string value as false (aggr)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_aggr_analysis",
+          arguments: {
+            analysis_name: "aggr_test",
+            csv_path: "/path/to/aggr.csv",
+            project_id: "project_789",
+            accept_payment: "yes",
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+
+    it("should handle boolean true (count)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test_analysis",
+            transcriptome: "GRCh38",
+            fastqs: ["sample.fastq.gz"],
+            project_id: "project_123",
+            accept_payment: true,
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=true");
+      expect(command).not.toContain("--accept-payment=false");
+    });
+
+    it("should handle boolean false (multi)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_multi_analysis",
+          arguments: {
+            analysis_name: "multi_test",
+            csv_path: "/path/to/config.csv",
+            project_id: "project_456",
+            accept_payment: false,
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--accept-payment=false");
+      expect(command).not.toContain("--accept-payment=true");
+    });
+  });
+
   describe("Special Cases", () => {
     it("should handle empty fastqs array", async () => {
       mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);

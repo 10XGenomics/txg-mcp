@@ -141,6 +141,49 @@ describe("Response Handling Tests", () => {
     });
   });
 
+  describe("Security", () => {
+    it("should redact access token from fullCommand", () => {
+      const result = toResponse({
+        stdout: "Success",
+        stderr: "",
+        exitCode: 0,
+        fullCommand: "txg analyses list --access-token abc123xyz",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.fullCommand).toBe("txg analyses list --access-token ***");
+      expect(result.fullCommand).not.toContain("abc123xyz");
+    });
+
+    it("should handle command without access token", () => {
+      const result = toResponse({
+        stdout: "Success",
+        stderr: "",
+        exitCode: 0,
+        fullCommand: "txg --version",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.fullCommand).toBe("txg --version");
+    });
+
+    it("should redact access token from failed command", () => {
+      const result = toResponse({
+        stdout: "",
+        stderr: "Error",
+        exitCode: 1,
+        fullCommand:
+          "txg analyses create --access-token secret123 --project-id foo",
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.fullCommand).toBe(
+        "txg analyses create --access-token *** --project-id foo",
+      );
+      expect(result.fullCommand).not.toContain("secret123");
+    });
+  });
+
   describe("Edge Cases", () => {
     it("should handle null/undefined values gracefully", () => {
       const result = toResponse({

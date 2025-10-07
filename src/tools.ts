@@ -1,9 +1,25 @@
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { txgCli } from "./txg-cli-manager.js";
+import { txgCli, LONG_OPERATION_TIMEOUT } from "./txg-cli-manager.js";
 import { toResponse, toAnalysisResponse, wrapResponse } from "./middleware.js";
 import { getMultiCsvConfigSpec } from "./multi-csv-spec.js";
+
+/**
+ * Add payment acceptance flag to command.
+ * Only passes --accept-payment=true if explicitly set to "true" (string) or true (boolean).
+ * Otherwise, passes --accept-payment=false for safety.
+ */
+function addAcceptPaymentFlag(
+  command: string[],
+  acceptPayment?: string | boolean,
+) {
+  if (acceptPayment === "true" || acceptPayment === true) {
+    command.push("--accept-payment=true");
+  } else {
+    command.push("--accept-payment=false");
+  }
+}
 
 export function registerTools(server: Server) {
   // Register the tool call handler
@@ -43,6 +59,7 @@ export function registerTools(server: Server) {
             .string()
             .optional()
             .describe("Specific Cell Ranger version"),
+          accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
         const params = schema.parse(args);
@@ -71,6 +88,8 @@ export function registerTools(server: Server) {
           command.push("--product-version", params.product_version);
         }
 
+        addAcceptPaymentFlag(command, params.accept_payment);
+
         return wrapResponse(
           toAnalysisResponse(await txgCli.runCommand(command)),
         );
@@ -87,6 +106,7 @@ export function registerTools(server: Server) {
           project_name: z.string().optional(),
           expect_cells: z.number().optional(),
           chemistry: z.string().optional().default("auto"),
+          accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
         const params = schema.parse(args);
@@ -118,6 +138,8 @@ export function registerTools(server: Server) {
           command.push("--chemistry", params.chemistry);
         }
 
+        addAcceptPaymentFlag(command, params.accept_payment);
+
         return wrapResponse(
           toAnalysisResponse(await txgCli.runCommand(command)),
         );
@@ -131,6 +153,7 @@ export function registerTools(server: Server) {
           project_name: z.string().optional(),
           normalize: z.string().optional().default("mapped"),
           description: z.string().optional(),
+          accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
         const params = schema.parse(args);
@@ -158,6 +181,8 @@ export function registerTools(server: Server) {
         if (params.description) {
           command.push("--description", params.description);
         }
+
+        addAcceptPaymentFlag(command, params.accept_payment);
 
         return wrapResponse(
           toAnalysisResponse(await txgCli.runCommand(command)),
@@ -208,14 +233,17 @@ export function registerTools(server: Server) {
         const params = schema.parse(args);
         return wrapResponse(
           toResponse(
-            await txgCli.runCommand([
-              "analyses",
-              "download",
-              params.analysis_id,
-              "--target-dir",
-              params.output_path,
-              "--assumeyes",
-            ]),
+            await txgCli.runCommand(
+              [
+                "analyses",
+                "download",
+                params.analysis_id,
+                "--target-dir",
+                params.output_path,
+                "--assumeyes",
+              ],
+              LONG_OPERATION_TIMEOUT,
+            ),
           ),
         );
       }
@@ -247,14 +275,17 @@ export function registerTools(server: Server) {
         const params = schema.parse(args);
         return wrapResponse(
           toResponse(
-            await txgCli.runCommand([
-              "fastqs",
-              "upload",
-              "--project-id",
-              params.project_id,
-              params.file_path,
-              "--assumeyes",
-            ]),
+            await txgCli.runCommand(
+              [
+                "fastqs",
+                "upload",
+                "--project-id",
+                params.project_id,
+                params.file_path,
+                "--assumeyes",
+              ],
+              LONG_OPERATION_TIMEOUT,
+            ),
           ),
         );
       }
@@ -307,14 +338,17 @@ export function registerTools(server: Server) {
         const params = schema.parse(args);
         return wrapResponse(
           toResponse(
-            await txgCli.runCommand([
-              "files",
-              "upload",
-              "--project-id",
-              params.project_id,
-              params.file_path,
-              "--assumeyes",
-            ]),
+            await txgCli.runCommand(
+              [
+                "files",
+                "upload",
+                "--project-id",
+                params.project_id,
+                params.file_path,
+                "--assumeyes",
+              ],
+              LONG_OPERATION_TIMEOUT,
+            ),
           ),
         );
       }
@@ -328,16 +362,19 @@ export function registerTools(server: Server) {
         const params = schema.parse(args);
         return wrapResponse(
           toResponse(
-            await txgCli.runCommand([
-              "files",
-              "download",
-              params.project_id,
-              "--file-id",
-              params.file_id,
-              "--target-dir",
-              params.output_path,
-              "--assumeyes",
-            ]),
+            await txgCli.runCommand(
+              [
+                "files",
+                "download",
+                params.project_id,
+                "--file-id",
+                params.file_id,
+                "--target-dir",
+                params.output_path,
+                "--assumeyes",
+              ],
+              LONG_OPERATION_TIMEOUT,
+            ),
           ),
         );
       }
@@ -449,14 +486,17 @@ export function registerTools(server: Server) {
         const params = schema.parse(args);
         return wrapResponse(
           toResponse(
-            await txgCli.runCommand([
-              "references",
-              "upload",
-              params.file_path,
-              "--name",
-              params.name,
-              "--assumeyes",
-            ]),
+            await txgCli.runCommand(
+              [
+                "references",
+                "upload",
+                params.file_path,
+                "--name",
+                params.name,
+                "--assumeyes",
+              ],
+              LONG_OPERATION_TIMEOUT,
+            ),
           ),
         );
       }

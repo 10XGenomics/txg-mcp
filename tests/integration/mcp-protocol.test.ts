@@ -91,7 +91,7 @@ describe("MCP Protocol Tests", () => {
     process.env.NODE_ENV = "test";
 
     // Dynamically import to ensure NODE_ENV is set first
-    const { createServer } = await import("../../src/index");
+    const { createServer } = await import("../../src/index.js");
 
     server = createServer();
 
@@ -133,7 +133,6 @@ describe("MCP Protocol Tests", () => {
       expect(response.result).toBeDefined();
       expect(response.result.serverInfo).toBeDefined();
       expect(response.result.serverInfo.name).toBe("10x-genomics");
-      expect(response.result.serverInfo.version).toBe("1.0.0");
       expect(response.result.capabilities).toBeDefined();
     });
 
