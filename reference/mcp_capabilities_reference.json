@@ -36,7 +36,7 @@
     },
     {
       "name": "create_cellranger_multi_analysis",
-      "description": "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'multi' analysis. REQUIRED for Flex assays, multimodal experiments, feature barcoding, multiplexed samples. IMPORTANT: if csv file is not already provided, use 'get_multi_csv_config_spec' tool FIRST to get the correct CSV format for 10x Cloud. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -105,7 +105,7 @@
     },
     {
       "name": "create_cellranger_count_analysis",
-      "description": "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'count' analysis. ONLY for simple single-sample gene expression without additional modalities. NOT for Flex assays. Pipeline selection: Use 'multi' for Flex assays, multimodal experiments, feature barcoding, or multiplexed samples. Use 'count' for simple single-sample gene expression only. If unsure, ask user about assay type. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -182,7 +182,7 @@
     },
     {
       "name": "create_cellranger_aggr_analysis",
-      "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. CRITICAL: Always explicitly confirm parameters before creating analysis (expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
+      "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, hours-long compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -609,6 +609,18 @@
             ],
             "default": null,
             "description": "New description for the reference"
+          },
+          "organism": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Scientific name of the organism followed by the common name in parentheses (optional)"
           }
         },
         "required": [
@@ -629,10 +641,6 @@
           "name": {
             "type": "string",
             "description": "Name for the custom reference"
-          },
-          "organism": {
-            "type": "string",
-            "description": "Organism name (e.g., 'Human', 'Mouse', or custom species name)"
           }
         },
         "required": [

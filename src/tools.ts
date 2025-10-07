@@ -419,6 +419,7 @@ export function registerTools(server: Server) {
           reference_id: z.string(),
           name: z.string().optional(),
           description: z.string().optional(),
+          organism: z.string().optional(),
         });
         const params = schema.parse(args);
         const command = [
@@ -433,6 +434,9 @@ export function registerTools(server: Server) {
         if (params.description) {
           command.push("--description", params.description);
         }
+        if (params.organism) {
+          command.push("--organism", params.organism);
+        }
 
         return wrapResponse(toResponse(await txgCli.runCommand(command)));
       }
@@ -441,7 +445,6 @@ export function registerTools(server: Server) {
         const schema = z.object({
           file_path: z.string(),
           name: z.string(),
-          organism: z.string(),
         });
         const params = schema.parse(args);
         return wrapResponse(
@@ -452,8 +455,6 @@ export function registerTools(server: Server) {
               params.file_path,
               "--name",
               params.name,
-              "--organism",
-              params.organism,
               "--assumeyes",
             ]),
           ),
