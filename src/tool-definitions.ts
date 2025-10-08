@@ -378,7 +378,7 @@ export const TOOL_DEFINITIONS = [
           description: "Local directory path where file will be saved",
         },
       },
-      required: ["project_id", "file_name", "output_path"],
+      required: ["project_id", "file_id", "output_path"],
     },
   },
 
