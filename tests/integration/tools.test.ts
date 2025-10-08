@@ -86,6 +86,29 @@ describe("Tools Integration Tests", () => {
       expect(toolNames).toContain("create_cellranger_count_analysis");
       expect(toolNames).toContain("list_projects");
     });
+
+    it("should have all required fields present in inputSchema properties", async () => {
+      const result = await listHandler({ params: {} } as any);
+
+      for (const tool of result.tools) {
+        if (tool.inputSchema.required && tool.inputSchema.required.length > 0) {
+          const properties = tool.inputSchema.properties || {};
+          const propertyNames = Object.keys(properties);
+
+          for (const requiredField of tool.inputSchema.required) {
+            expect({
+              tool: tool.name,
+              propertyNames,
+              requiredField,
+            }).toMatchObject({
+              tool: tool.name,
+              propertyNames: expect.arrayContaining([requiredField]),
+              requiredField,
+            });
+          }
+        }
+      }
+    });
   });
 
   describe("Error Handling", () => {
