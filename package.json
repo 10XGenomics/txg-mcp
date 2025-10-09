@@ -1,7 +1,7 @@
 {
   "name": "10x-genomics-mcp",
-  "version": "0.4.0",
-  "description": "10x Genomics Cloud Analysis MCP Server",
+  "version": "0.5.0",
+  "description": "10x Genomics Cloud MCP Server",
   "type": "module",
   "main": "server/index.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "fix": "npm run lint:fix && npm run format:fix",
     "format": "prettier . --cache --cache-location ./.cache/.prettier-cache --check",
     "format:fix": "prettier . --cache --cache-location ./.cache/.prettier-cache --write",
-    "generate-capabilities": "./tasks.sh generate-capabilities",
+    "generate-capabilities": "npm run build &&./tasks.sh generate-capabilities",
     "lint": "eslint --cache --cache-location ./.cache/.eslint-cache",
     "lint:fix": "eslint --cache --cache-location ./.cache/.eslint-cache --fix",
     "pack": "./tasks.sh pack",

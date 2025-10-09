@@ -21,14 +21,20 @@ export const TOOL_DEFINITIONS = [
       type: "object",
       properties: {},
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "verify_auth",
     description:
-      "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud Analysis.",
+      "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud.",
     inputSchema: {
       type: "object",
       properties: {},
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
 
@@ -40,6 +46,9 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {},
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {
@@ -195,6 +204,9 @@ export const TOOL_DEFINITIONS = [
       },
       required: ["project_id"],
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "get_analysis_details",
@@ -209,6 +221,9 @@ export const TOOL_DEFINITIONS = [
       },
       required: ["analysis_id"],
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "list_analysis_files",
@@ -222,6 +237,9 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ["analysis_id"],
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {
@@ -252,6 +270,9 @@ export const TOOL_DEFINITIONS = [
       type: "object",
       properties: {},
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
 
   // FASTQ Tools
@@ -267,6 +288,9 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ["project_id"],
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {
@@ -303,6 +327,9 @@ export const TOOL_DEFINITIONS = [
       },
       required: ["project_id"],
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "set_library",
@@ -338,6 +365,9 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ["project_id"],
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {
@@ -390,6 +420,9 @@ export const TOOL_DEFINITIONS = [
       type: "object",
       properties: {},
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "create_project",
@@ -438,6 +471,9 @@ export const TOOL_DEFINITIONS = [
       type: "object",
       properties: {},
     },
+    annotations: {
+      readOnlyHint: true,
+    },
   },
   {
     name: "list_prebuilt_references",
@@ -445,6 +481,9 @@ export const TOOL_DEFINITIONS = [
     inputSchema: {
       type: "object",
       properties: {},
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {
@@ -459,6 +498,9 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ["reference_id"],
+    },
+    annotations: {
+      readOnlyHint: true,
     },
   },
   {

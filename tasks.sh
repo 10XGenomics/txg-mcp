@@ -115,6 +115,22 @@ pack() {
         return 1
     fi
 
+    # Copy USER_GUIDE.md as README.md
+    if [[ -f "USER_GUIDE.md" ]]; then
+        cp USER_GUIDE.md build/README.md
+        print_success "Copied USER_GUIDE.md as README.md"
+    else
+        print_warning "USER_GUIDE.md not found"
+    fi
+
+    # Copy LICENSE
+    if [[ -f "LICENSE" ]]; then
+        cp LICENSE build/
+        print_success "Copied LICENSE"
+    else
+        print_warning "LICENSE not found"
+    fi
+
     # Check that bin folder exists and is non-empty
     if [[ -d "build/bin" ]]; then
         if [[ -n "$(ls -A build/bin 2>/dev/null)" ]]; then

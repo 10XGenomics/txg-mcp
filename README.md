@@ -1,6 +1,6 @@
 # 10x Genomics MCP Server for Claude Desktop
 
-10x Genomics Cloud Analysis MCP server for Claude Desktop.
+10x Genomics Cloud MCP server for Claude Desktop.
 
 ## Deploy to Claude Desktop
 
@@ -15,7 +15,7 @@
 ### Prerequisites
 
 - Node.js 18+ (comes with Claude Desktop)
-- Access to 10x Genomics Cloud Analysis platform
+- Access to 10x Genomics Cloud platform
 - Valid 10x Genomics access token
 
 ### Development Setup
