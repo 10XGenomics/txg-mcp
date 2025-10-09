@@ -9,10 +9,18 @@ export interface CommandResult {
   stderr: string;
   exitCode: number;
   fullCommand: string;
+  inProgress: boolean;
 }
 
-// Default timeout for CLI commands (1 hour)
-export const LONG_OPERATION_TIMEOUT = 3600000; // 1 hour in milliseconds
+// Timeout constants for different operation types
+// Quick operations: API calls that should complete in seconds
+export const QUICK_OPERATION_TIMEOUT = 120000; // 2 minutes
+
+// Long operations: File uploads/downloads that may take hours
+export const LONG_OPERATION_TIMEOUT = 7200000; // 2 hours
+
+// Soft timeout: Return early with progress message for long operations
+export const LONG_OPERATION_SOFT_TIMEOUT = 60000; // 1 minute
 
 class TxgCliManager {
   private txgPath: string;
@@ -85,7 +93,8 @@ class TxgCliManager {
 
   async runCommand(
     args: string[],
-    timeout: number = LONG_OPERATION_TIMEOUT,
+    timeout: number = QUICK_OPERATION_TIMEOUT,
+    softTimeout?: number,
   ): Promise<CommandResult> {
     // In test mode, return mock result
     if (process.env.NODE_ENV === "test") {
@@ -94,6 +103,7 @@ class TxgCliManager {
         stderr: "",
         exitCode: 0,
         fullCommand: `mock-txg ${args.join(" ")}`,
+        inProgress: false,
       });
     }
 
@@ -119,16 +129,38 @@ class TxgCliManager {
 
       let stdout = "";
       let stderr = "";
+      let resolved = false;
       let timedOut = false;
 
-      // Set timeout handler
-      const timeoutId = setTimeout(() => {
+      // Set hard timeout handler
+      const hardTimeoutId = setTimeout(() => {
         timedOut = true;
         child.kill();
         reject(
           new Error(`Command timed out after ${timeout}ms: ${fullCommand}`),
         );
       }, timeout);
+
+      // Set soft timeout handler if specified
+      let softTimeoutId: NodeJS.Timeout | undefined;
+      if (softTimeout) {
+        softTimeoutId = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            console.error(
+              `[TXG CLI] Soft timeout reached, returning partial result while command continues...`,
+            );
+            // Return partial result - command keeps running
+            resolve({
+              stdout: stdout.trim(),
+              stderr: stderr.trim(),
+              exitCode: 0, // Not yet completed
+              inProgress: true,
+              fullCommand,
+            });
+          }
+        }, softTimeout);
+      }
 
       child.stdout.on("data", (data) => {
         stdout += data.toString();
@@ -139,13 +171,29 @@ class TxgCliManager {
       });
 
       child.on("error", (error) => {
-        clearTimeout(timeoutId);
-        reject(new Error(`Failed to run command: ${error.message}`));
+        clearTimeout(hardTimeoutId);
+        if (softTimeoutId) {
+          clearTimeout(softTimeoutId);
+        }
+
+        if (!resolved) {
+          resolved = true;
+          console.error(`[TXG CLI] Command error: ${error.message}`);
+          reject(new Error(`Failed to run command: ${error.message}`));
+        } else {
+          // Already resolved with partial result, just log the error
+          console.error(`[TXG CLI] Background command error: ${error.message}`);
+        }
       });
 
       child.on("close", (code) => {
-        clearTimeout(timeoutId);
-        if (!timedOut) {
+        clearTimeout(hardTimeoutId);
+        if (softTimeoutId) {
+          clearTimeout(softTimeoutId);
+        }
+
+        if (!resolved && !timedOut) {
+          resolved = true;
           const exitCode = code || 0;
 
           // Log command result to stderr
@@ -160,7 +208,13 @@ class TxgCliManager {
             stderr: stderr.trim(),
             exitCode: exitCode,
             fullCommand,
+            inProgress: false,
           });
+        } else if (resolved) {
+          // Command completed after soft timeout - just log it
+          console.error(
+            `[TXG CLI] Background command completed with exit code: ${code || 0}`,
+          );
         }
       });
     });

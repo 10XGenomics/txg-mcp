@@ -2,6 +2,7 @@
  * Tests for response transformation and error handling.
  */
 
+import type { Response } from "../../src/middleware.js";
 import { toResponse, toAnalysisResponse } from "../../src/middleware.js";
 import {
   VERSION_INFO,
@@ -17,9 +18,9 @@ import {
 describe("Response Handling Tests", () => {
   describe("toResponse", () => {
     it("should handle successful response transformation", () => {
-      const result = toResponse(VERSION_INFO);
+      const result = toResponse(VERSION_INFO) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toBe("txg version 1.2.3");
       expect(result.error).toBe("");
       expect(result.returncode).toBe(0);
@@ -27,18 +28,18 @@ describe("Response Handling Tests", () => {
     });
 
     it("should handle failed response transformation", () => {
-      const result = toResponse(AUTH_FAILURE);
+      const result = toResponse(AUTH_FAILURE) as Response;
 
-      expect(result.success).toBe(false);
+      expect(result.status).toBe("error");
       expect(result.content).toBe("");
       expect(result.error).toContain("Authentication failed");
       expect(result.returncode).toBe(1);
     });
 
     it("should handle response with stderr warning but success code", () => {
-      const result = toResponse(SUCCESS_WITH_WARNING);
+      const result = toResponse(SUCCESS_WITH_WARNING) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       // On success, error should be empty even if stderr has content
       expect(result.content).toBe("Operation completed");
       expect(result.error).toBe("");
@@ -46,35 +47,35 @@ describe("Response Handling Tests", () => {
     });
 
     it("should preserve JSON response formatting", () => {
-      const result = toResponse(PROJECTS_LIST);
+      const result = toResponse(PROJECTS_LIST) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toContain('"id": "project_123"');
       expect(result.content).toContain('"name": "Test Project"');
       expect(result.error).toBe("");
     });
 
     it("should handle empty list responses", () => {
-      const result = toResponse(EMPTY_LIST);
+      const result = toResponse(EMPTY_LIST) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toBe("[]");
       expect(result.error).toBe("");
       expect(result.returncode).toBe(0);
     });
 
     it("should preserve multiline output", () => {
-      const result = toResponse(MULTILINE_OUTPUT);
+      const result = toResponse(MULTILINE_OUTPUT) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toBe("Line 1\nLine 2\nLine 3\nLine 4");
       expect(result.content.split("\n").length).toBe(4);
     });
 
     it("should preserve special characters", () => {
-      const result = toResponse(SPECIAL_CHARS_OUTPUT);
+      const result = toResponse(SPECIAL_CHARS_OUTPUT) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toContain('"quotes"');
       expect(result.content).toContain("'apostrophes'");
       expect(result.content).toContain("$pecial ch@rs!");
@@ -94,9 +95,10 @@ describe("Response Handling Tests", () => {
           stderr: errorMsg,
           exitCode,
           fullCommand: "txg test",
-        });
+          inProgress: false,
+        }) as Response;
 
-        expect(result.success).toBe(false);
+        expect(result.status).toBe("error");
         expect(result.returncode).toBe(exitCode);
         expect(result.error).toBe(errorMsg);
         expect(result.content).toBe("");
@@ -106,9 +108,9 @@ describe("Response Handling Tests", () => {
 
   describe("toAnalysisResponse", () => {
     it("should add extra fields for successful analysis creation", () => {
-      const result = toAnalysisResponse(ANALYSIS_CREATED);
+      const result = toAnalysisResponse(ANALYSIS_CREATED) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.message).toContain("Analysis started successfully");
       expect(result.next_steps).toBeDefined();
       expect(result.next_steps).toContain("get_analysis_details");
@@ -121,18 +123,19 @@ describe("Response Handling Tests", () => {
         stderr: "Error: Invalid parameters",
         exitCode: 1,
         fullCommand: "txg analyses create",
+        inProgress: false,
       };
 
-      const result = toAnalysisResponse(failedResult);
+      const result = toAnalysisResponse(failedResult) as Response;
 
-      expect(result.success).toBe(false);
+      expect(result.status).toBe("error");
       expect(result.message).toBeUndefined();
       expect(result.next_steps).toBeUndefined();
       expect(result.error).toBe("Error: Invalid parameters");
     });
 
     it("should preserve all base response fields", () => {
-      const result = toAnalysisResponse(ANALYSIS_CREATED);
+      const result = toAnalysisResponse(ANALYSIS_CREATED) as Response;
 
       expect(result.content).toContain("Analysis created successfully");
       expect(result.error).toBe("");
@@ -148,9 +151,10 @@ describe("Response Handling Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg analyses list --access-token abc123xyz",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.fullCommand).toBe("txg analyses list --access-token ***");
       expect(result.fullCommand).not.toContain("abc123xyz");
     });
@@ -161,9 +165,10 @@ describe("Response Handling Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg --version",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.fullCommand).toBe("txg --version");
     });
 
@@ -174,9 +179,10 @@ describe("Response Handling Tests", () => {
         exitCode: 1,
         fullCommand:
           "txg analyses create --access-token secret123 --project-id foo",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result.success).toBe(false);
+      expect(result.status).toBe("error");
       expect(result.fullCommand).toBe(
         "txg analyses create --access-token *** --project-id foo",
       );
@@ -191,9 +197,10 @@ describe("Response Handling Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg test",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toBe("");
       expect(result.error).toBe("");
     });
@@ -205,9 +212,10 @@ describe("Response Handling Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg test",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result.success).toBe(true);
+      expect(result.status).toBe("success");
       expect(result.content).toBe(longOutput);
       expect(result.content.length).toBe(10000);
     });
@@ -219,9 +227,10 @@ describe("Response Handling Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg test",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result1.success).toBe(true);
+      expect(result1.status).toBe("success");
       expect(result1.content).toContain("Error:");
 
       // stderr with info message but failure code
@@ -230,9 +239,10 @@ describe("Response Handling Tests", () => {
         stderr: "Info: Process failed",
         exitCode: 1,
         fullCommand: "txg test",
-      });
+        inProgress: false,
+      }) as Response;
 
-      expect(result2.success).toBe(false);
+      expect(result2.status).toBe("error");
       expect(result2.error).toContain("Info:");
     });
   });

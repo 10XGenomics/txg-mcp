@@ -1,7 +1,11 @@
 import type { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
-import { txgCli, LONG_OPERATION_TIMEOUT } from "./txg-cli-manager.js";
+import {
+  txgCli,
+  LONG_OPERATION_TIMEOUT,
+  LONG_OPERATION_SOFT_TIMEOUT,
+} from "./txg-cli-manager.js";
 import { toResponse, toAnalysisResponse, wrapResponse } from "./middleware.js";
 import { getMultiCsvConfigSpec } from "./multi-csv-spec.js";
 
@@ -243,6 +247,7 @@ export function registerTools(server: Server) {
                 "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
+              LONG_OPERATION_SOFT_TIMEOUT,
             ),
           ),
         );
@@ -285,6 +290,7 @@ export function registerTools(server: Server) {
                 "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
+              LONG_OPERATION_SOFT_TIMEOUT,
             ),
           ),
         );
@@ -348,6 +354,7 @@ export function registerTools(server: Server) {
                 "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
+              LONG_OPERATION_SOFT_TIMEOUT,
             ),
           ),
         );
@@ -374,6 +381,7 @@ export function registerTools(server: Server) {
                 "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
+              LONG_OPERATION_SOFT_TIMEOUT,
             ),
           ),
         );
@@ -496,6 +504,7 @@ export function registerTools(server: Server) {
                 "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
+              LONG_OPERATION_SOFT_TIMEOUT,
             ),
           ),
         );
