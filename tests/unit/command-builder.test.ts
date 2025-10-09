@@ -19,6 +19,7 @@ const DUMMY_RESPONSE = {
   stderr: "",
   exitCode: 0,
   fullCommand: "not-relevant-for-these-tests",
+  inProgress: false,
 };
 
 describe("Command Building Tests", () => {
@@ -56,6 +57,7 @@ describe("Command Building Tests", () => {
           stderr: "",
           exitCode: 0,
           fullCommand: `txg ${args.join(" ")}`,
+          inProgress: false,
         };
       }) as jest.MockedFunction<typeof txgCliManager.txgCli.runCommand>;
 

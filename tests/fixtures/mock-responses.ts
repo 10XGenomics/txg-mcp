@@ -7,6 +7,7 @@ export interface CommandResult {
   stderr: string;
   exitCode: number;
   fullCommand: string;
+  inProgress: boolean;
 }
 
 // Successful auth verification
@@ -15,6 +16,7 @@ export const AUTH_SUCCESS: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg auth verify",
+  inProgress: false,
 };
 
 // Failed auth verification
@@ -23,6 +25,7 @@ export const AUTH_FAILURE: CommandResult = {
   stderr: "Error: Authentication failed. Token is invalid or expired.",
   exitCode: 1,
   fullCommand: "txg auth verify",
+  inProgress: false,
 };
 
 // Successful analysis creation
@@ -36,6 +39,7 @@ Status: PENDING`,
   exitCode: 0,
   fullCommand:
     "txg analyses create cellranger count --analysis-name test --transcriptome GRCh38",
+  inProgress: false,
 };
 
 // Version check
@@ -44,6 +48,7 @@ export const VERSION_INFO: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg --version",
+  inProgress: false,
 };
 
 // List projects success
@@ -65,6 +70,7 @@ export const PROJECTS_LIST: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg projects list",
+  inProgress: false,
 };
 
 // Empty list
@@ -73,6 +79,7 @@ export const EMPTY_LIST: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg projects list",
+  inProgress: false,
 };
 
 // Command error
@@ -81,6 +88,7 @@ export const INVALID_COMMAND: CommandResult = {
   stderr: "Error: Invalid command or missing parameters",
   exitCode: 2,
   fullCommand: "txg invalid command",
+  inProgress: false,
 };
 
 // Warning with success
@@ -89,6 +97,7 @@ export const SUCCESS_WITH_WARNING: CommandResult = {
   stderr: "Warning: This is a warning message",
   exitCode: 0,
   fullCommand: "txg some command",
+  inProgress: false,
 };
 
 // Multi-line output
@@ -97,6 +106,7 @@ export const MULTILINE_OUTPUT: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg test",
+  inProgress: false,
 };
 
 // Special characters
@@ -105,4 +115,5 @@ export const SPECIAL_CHARS_OUTPUT: CommandResult = {
   stderr: "",
   exitCode: 0,
   fullCommand: "txg test",
+  inProgress: false,
 };

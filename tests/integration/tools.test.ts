@@ -50,6 +50,7 @@ describe("Tools Integration Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "",
+        inProgress: false,
       })) as jest.MockedFunction<typeof txgCliManager.txgCli.runCommand>;
   });
 
@@ -158,6 +159,7 @@ describe("Tools Integration Tests", () => {
         stderr: "",
         exitCode: 0,
         fullCommand: "txg test",
+        inProgress: false,
       });
 
       // Execute multiple tools in parallel
