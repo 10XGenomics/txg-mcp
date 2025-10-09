@@ -1,7 +1,7 @@
 {
   "server_info": {
     "name": "10x-genomics",
-    "version": "0.4.0"
+    "version": "0.5.0"
   },
   "protocol_version": "2024-11-05",
   "capabilities": {
@@ -16,14 +16,20 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
       "name": "verify_auth",
-      "description": "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud Analysis.",
+      "description": "Verify authentication for the TXG CLI tool. Returns email of the authenticated user. If authentication fails, instruct the user to update the token in Claude Desktop settings > Extensions > 10x Genomics Cloud.",
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -32,6 +38,9 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -299,6 +308,9 @@
         "required": [
           "project_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -315,6 +327,9 @@
         "required": [
           "analysis_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -331,6 +346,9 @@
         "required": [
           "analysis_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -360,6 +378,9 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -376,6 +397,9 @@
         "required": [
           "project_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -413,6 +437,9 @@
         "required": [
           "project_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -455,6 +482,9 @@
         "required": [
           "project_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -499,7 +529,7 @@
         },
         "required": [
           "project_id",
-          "file_name",
+          "file_id",
           "output_path"
         ]
       }
@@ -510,6 +540,9 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -586,6 +619,9 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -594,6 +630,9 @@
       "inputSchema": {
         "type": "object",
         "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
@@ -610,6 +649,9 @@
         "required": [
           "reference_id"
         ]
+      },
+      "annotations": {
+        "readOnlyHint": true
       }
     },
     {
