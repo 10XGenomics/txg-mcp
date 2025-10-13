@@ -25,7 +25,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "^1.20.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {
