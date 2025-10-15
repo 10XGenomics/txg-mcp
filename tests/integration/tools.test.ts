@@ -20,7 +20,7 @@ describe("Tools Integration Tests", () => {
   let listHandler: any;
 
   beforeEach(() => {
-    process.env.ACCESS_TOKEN = "test_token";
+    process.env.TXG_CLI_ACCESS_TOKEN = "test_token";
     process.env.NODE_ENV = "test";
 
     server = new Server(
@@ -55,7 +55,7 @@ describe("Tools Integration Tests", () => {
   });
 
   afterEach(() => {
-    delete process.env.ACCESS_TOKEN;
+    delete process.env.TXG_CLI_ACCESS_TOKEN;
     delete process.env.NODE_ENV;
     jest.restoreAllMocks();
   });

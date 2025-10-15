@@ -87,11 +87,6 @@ export const TOOL_DEFINITIONS = [
           default: null,
           description: "Analysis description",
         },
-        product_version: {
-          anyOf: [{ type: "string" }, { type: "null" }],
-          default: null,
-          description: "Specific Cell Ranger version to use (e.g., '9.0.1')",
-        },
         accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
       required: ["analysis_name", "csv_path"],
@@ -120,7 +115,7 @@ export const TOOL_DEFINITIONS = [
           type: "array",
           items: { type: "string" },
           description:
-            "List of FASTQ file paths or FASTQ set IDs to analyze. Can be local paths or previously uploaded FASTQ set IDs in the format txg://fastqs/<filename> or txg://fastqs/<fastq_uuid>",
+            "List of FASTQ file paths or FASTQ URIs to analyze. Can be local paths or previously uploaded FASTQs in the format txg://fastqs/<filename> or txg://fastqs/<fastq_uuid>",
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],

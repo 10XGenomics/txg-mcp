@@ -56,7 +56,7 @@ run_server() {
         print_info "Get your token from: https://cloud.10xgenomics.com/account/security"
         return 1
     fi
-    export ACCESS_TOKEN="$access_token"
+    export TXG_CLI_ACCESS_TOKEN="$access_token"
 
     cd "$SCRIPT_DIR"
 
@@ -72,7 +72,7 @@ run_server() {
     print_info "Starting MCP server..."
 
     # Run the server with the access token
-    ACCESS_TOKEN="$access_token" node build/server/index.js
+    TXG_CLI_ACCESS_TOKEN="$access_token" node build/server/index.js
 }
 
 # Create MCP bundle

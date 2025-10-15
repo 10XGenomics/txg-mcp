@@ -16,7 +16,7 @@ export function createServer() {
   const server = new Server(
     {
       name: "10x-genomics",
-      version: "0.5.0",
+      version: "1.0.0",
     },
     {
       capabilities: {
@@ -63,8 +63,8 @@ export function createServer() {
 // Only run main when not imported (not in test mode)
 if (process.env.NODE_ENV !== "test") {
   // Validate environment
-  if (!process.env.ACCESS_TOKEN) {
-    console.error("Warning: ACCESS_TOKEN environment variable not set");
+  if (!process.env.TXG_CLI_ACCESS_TOKEN) {
+    console.error("Warning: TXG_CLI_ACCESS_TOKEN environment variable not set");
   }
 
   // Create server instance

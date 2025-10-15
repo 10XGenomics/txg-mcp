@@ -59,10 +59,6 @@ export function registerTools(server: Server) {
           project_id: z.string().optional().describe("ID of existing project"),
           project_name: z.string().optional().describe("Name of a new project"),
           description: z.string().optional(),
-          product_version: z
-            .string()
-            .optional()
-            .describe("Specific Cell Ranger version"),
           accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
@@ -72,6 +68,8 @@ export function registerTools(server: Server) {
           "create",
           "cellranger",
           "multi",
+          "--product-version",
+          "latest",
           "--analysis-name",
           params.analysis_name,
           "--csv",
@@ -87,9 +85,6 @@ export function registerTools(server: Server) {
         }
         if (params.description) {
           command.push("--description", params.description);
-        }
-        if (params.product_version) {
-          command.push("--product-version", params.product_version);
         }
 
         addAcceptPaymentFlag(command, params.accept_payment);
@@ -119,6 +114,8 @@ export function registerTools(server: Server) {
           "create",
           "cellranger",
           "count",
+          "--product-version",
+          "latest",
           "--analysis-name",
           params.analysis_name,
           "--transcriptome",
@@ -166,6 +163,8 @@ export function registerTools(server: Server) {
           "create",
           "cellranger",
           "aggr",
+          "--product-version",
+          "latest",
           "--analysis-name",
           params.analysis_name,
           "--csv",
@@ -390,7 +389,9 @@ export function registerTools(server: Server) {
       // --- Project Management Tools ---
       case "list_projects":
         return wrapResponse(
-          toResponse(await txgCli.runCommand(["projects", "list"])),
+          toResponse(
+            await txgCli.runCommand(["projects", "list", "--assumeyes"]),
+          ),
         );
 
       case "create_project": {
@@ -444,7 +445,7 @@ export function registerTools(server: Server) {
 
       case "list_prebuilt_references":
         return wrapResponse(
-          toResponse(await txgCli.runCommand(["prebuilt-reference"])),
+          toResponse(await txgCli.runCommand(["prebuilt-references"])),
         );
 
       case "get_reference": {

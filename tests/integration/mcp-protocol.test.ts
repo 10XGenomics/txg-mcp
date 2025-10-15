@@ -87,7 +87,7 @@ describe("MCP Protocol Tests", () => {
 
   beforeEach(async () => {
     // Set up environment
-    process.env.ACCESS_TOKEN = "test_token";
+    process.env.TXG_CLI_ACCESS_TOKEN = "test_token";
     process.env.NODE_ENV = "test";
 
     // Dynamically import to ensure NODE_ENV is set first
@@ -110,7 +110,7 @@ describe("MCP Protocol Tests", () => {
     if (server) {
       await server.close();
     }
-    delete process.env.ACCESS_TOKEN;
+    delete process.env.TXG_CLI_ACCESS_TOKEN;
     delete process.env.NODE_ENV;
   });
 

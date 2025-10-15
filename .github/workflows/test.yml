@@ -40,7 +40,7 @@ jobs:
 
       - name: Run tests
         env:
-          ACCESS_TOKEN: test_token_for_ci
+          TXG_CLI_ACCESS_TOKEN: test_token_for_ci
           NODE_ENV: test
         run: |
           npm test

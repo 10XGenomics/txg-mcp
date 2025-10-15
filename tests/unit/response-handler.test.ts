@@ -145,21 +145,20 @@ describe("Response Handling Tests", () => {
   });
 
   describe("Security", () => {
-    it("should redact access token from fullCommand", () => {
+    it("should preserve fullCommand as-is (access token now passed via env var)", () => {
       const result = toResponse({
         stdout: "Success",
         stderr: "",
         exitCode: 0,
-        fullCommand: "txg analyses list --access-token abc123xyz",
+        fullCommand: "txg analyses list",
         inProgress: false,
       }) as Response;
 
       expect(result.status).toBe("success");
-      expect(result.fullCommand).toBe("txg analyses list --access-token ***");
-      expect(result.fullCommand).not.toContain("abc123xyz");
+      expect(result.fullCommand).toBe("txg analyses list");
     });
 
-    it("should handle command without access token", () => {
+    it("should handle version command", () => {
       const result = toResponse({
         stdout: "Success",
         stderr: "",
@@ -172,21 +171,17 @@ describe("Response Handling Tests", () => {
       expect(result.fullCommand).toBe("txg --version");
     });
 
-    it("should redact access token from failed command", () => {
+    it("should preserve fullCommand for failed commands", () => {
       const result = toResponse({
         stdout: "",
         stderr: "Error",
         exitCode: 1,
-        fullCommand:
-          "txg analyses create --access-token secret123 --project-id foo",
+        fullCommand: "txg analyses create --project-id foo",
         inProgress: false,
       }) as Response;
 
       expect(result.status).toBe("error");
-      expect(result.fullCommand).toBe(
-        "txg analyses create --access-token *** --project-id foo",
-      );
-      expect(result.fullCommand).not.toContain("secret123");
+      expect(result.fullCommand).toBe("txg analyses create --project-id foo");
     });
   });
 
