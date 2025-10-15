@@ -139,6 +139,18 @@ export const TOOL_DEFINITIONS = [
           description:
             "Assay chemistry version (default: 'auto' for automatic detection)",
         },
+        cell_annotation_model: {
+          anyOf: [{ type: "string" }, { type: "null" }],
+          default: null,
+          description:
+            "Cell annotation model to use. If not provided, does not run cell annotation. Use 'auto' for default model for the species. or specify a particular model ID from 'list_annotation_models' tool.",
+        },
+        include_introns: {
+          type: "boolean",
+          default: true,
+          description:
+            "Whether to include intronic reads in count (default: true)",
+        },
         accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
       required: ["analysis_name", "transcriptome", "fastqs"],
