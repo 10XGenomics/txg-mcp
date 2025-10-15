@@ -103,9 +103,14 @@ export function registerTools(server: Server) {
           project_id: z.string().optional(),
           project_name: z.string().optional(),
           expect_cells: z.number().optional(),
+          force_cells: z.number().optional(),
           chemistry: z.string().optional().default("auto"),
           include_introns: z.union([z.string(), z.boolean()]).optional(),
           cell_annotation_model: z.string().optional(),
+          create_bam: z.union([z.string(), z.boolean()]).optional(),
+          nosecondary: z.union([z.string(), z.boolean()]).optional(),
+          r1_length: z.number().optional(),
+          r2_length: z.number().optional(),
           accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
@@ -135,6 +140,9 @@ export function registerTools(server: Server) {
         if (params.expect_cells) {
           command.push("--expect-cells", params.expect_cells.toString());
         }
+        if (params.force_cells) {
+          command.push("--force-cells", params.force_cells.toString());
+        }
         if (params.chemistry) {
           command.push("--chemistry", params.chemistry);
         }
@@ -152,6 +160,34 @@ export function registerTools(server: Server) {
           ) {
             command.push("--include-introns=false");
           }
+        }
+        if (params.create_bam !== undefined) {
+          if (
+            params.create_bam === true ||
+            params.create_bam === "true" ||
+            params.create_bam === "yes"
+          ) {
+            command.push("--create-bam=true");
+          } else if (
+            params.create_bam === false ||
+            params.create_bam === "false" ||
+            params.create_bam === "no"
+          ) {
+            command.push("--create-bam=false");
+          }
+        }
+        if (
+          params.nosecondary === true ||
+          params.nosecondary === "true" ||
+          params.nosecondary === "yes"
+        ) {
+          command.push("--nosecondary");
+        }
+        if (params.r1_length) {
+          command.push("--r1-length", params.r1_length.toString());
+        }
+        if (params.r2_length) {
+          command.push("--r2-length", params.r2_length.toString());
         }
         if (params.cell_annotation_model) {
           command.push("--cell-annotation-model", params.cell_annotation_model);

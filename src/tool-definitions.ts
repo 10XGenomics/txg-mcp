@@ -131,7 +131,14 @@ export const TOOL_DEFINITIONS = [
         expect_cells: {
           anyOf: [{ type: "integer" }, { type: "null" }],
           default: null,
-          description: "Expected number of cells (overrides auto-detection)",
+          description:
+            "Expected number of recovered cells, used as input to cell calling algorithm. Mutually exclusive with force_cells.",
+        },
+        force_cells: {
+          anyOf: [{ type: "integer" }, { type: "null" }],
+          default: null,
+          description:
+            "Force pipeline to use this number of cells, bypassing cell calling algorithm. Minimum: 10. Mutually exclusive with expect_cells.",
         },
         chemistry: {
           anyOf: [{ type: "string" }, { type: "null" }],
@@ -150,6 +157,30 @@ export const TOOL_DEFINITIONS = [
           default: true,
           description:
             "Whether to include intronic reads in count (default: true)",
+        },
+        create_bam: {
+          type: "boolean",
+          default: true,
+          description:
+            "Enable or disable BAM file generation (default: true). Setting to false reduces computation time and output size.",
+        },
+        nosecondary: {
+          type: "boolean",
+          default: false,
+          description:
+            "Disable secondary analysis (e.g., clustering) (default: false)",
+        },
+        r1_length: {
+          anyOf: [{ type: "integer" }, { type: "null" }],
+          default: null,
+          description:
+            "Hard trim the input Read 1 to this length before analysis",
+        },
+        r2_length: {
+          anyOf: [{ type: "integer" }, { type: "null" }],
+          default: null,
+          description:
+            "Hard trim the input Read 2 to this length before analysis",
         },
         accept_payment: ACCEPT_PAYMENT_PARAMETER,
       },
