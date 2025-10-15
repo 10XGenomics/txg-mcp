@@ -90,14 +90,16 @@ describe("Command Building Tests", () => {
       const command = mockRunCommand.mock.calls[0][0];
 
       // The tool should build this exact command structure
-      expect(command.slice(0, 5)).toEqual([
+      expect(command.slice(0, 7)).toEqual([
         "analyses",
         "create",
         "cellranger",
         "count",
+        "--product-version",
+        "latest",
         "--analysis-name",
       ]);
-      expect(command[5]).toBe("test_analysis");
+      expect(command[7]).toBe("test_analysis");
 
       // Verify all required parameters are correctly formatted
       assertCommandContains(
@@ -202,6 +204,8 @@ describe("Command Building Tests", () => {
         "create",
         "cellranger",
         "multi",
+        "--product-version",
+        "latest",
         "--analysis-name",
         "multi_test",
         "--csv",
@@ -210,8 +214,6 @@ describe("Command Building Tests", () => {
         "project_456",
         "--description",
         "Test multi analysis",
-        "--product-version",
-        "9.0.1",
       );
     });
   });
@@ -307,7 +309,7 @@ describe("Command Building Tests", () => {
   });
 
   describe("List Commands", () => {
-    it("should not include --assumeyes for list commands", async () => {
+    it("should include --assumeyes for list commands", async () => {
       mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
 
       await toolHandler({
@@ -319,8 +321,7 @@ describe("Command Building Tests", () => {
 
       const command = mockRunCommand.mock.calls[0][0];
 
-      expect(command).toEqual(["projects", "list"]);
-      expect(command).not.toContain("--assumeyes");
+      expect(command).toEqual(["projects", "list", "--assumeyes"]);
     });
 
     it("should handle list with filter parameters", async () => {

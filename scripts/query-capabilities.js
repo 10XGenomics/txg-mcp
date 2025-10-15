@@ -95,7 +95,7 @@ async function queryCapabilities(serverPath, accessToken) {
   return new Promise((resolve, reject) => {
     // Start the server as a subprocess
     const env = { ...process.env };
-    env.ACCESS_TOKEN = accessToken;
+    env.TXG_CLI_ACCESS_TOKEN = accessToken;
 
     const serverProcess = spawn("node", [serverPath], {
       env: env,

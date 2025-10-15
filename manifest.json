@@ -2,7 +2,7 @@
   "dxt_version": "0.1",
   "name": "10x Genomics",
   "display_name": "10x Genomics Cloud",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "Interact with 10x Genomics Cloud platform",
   "long_description": "This extension enables Claude to interact with 10x Genomics Cloud platform, allowing users to launch, monitor, and manage single-cell analysis pipelines directly through conversation. Users can execute Cell Ranger analysis, upload data, track pipeline progress, retrieve results, and perform quality control checks.",
   "author": {
@@ -19,7 +19,7 @@
       "command": "node",
       "args": ["${__dirname}/server/index.js"],
       "env": {
-        "ACCESS_TOKEN": "${user_config.access_token}"
+        "TXG_CLI_ACCESS_TOKEN": "${user_config.access_token}"
       }
     }
   },

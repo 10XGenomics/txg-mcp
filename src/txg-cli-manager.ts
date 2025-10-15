@@ -26,7 +26,6 @@ class TxgCliManager {
   private txgPath: string;
   private readonly platform: string;
   private readonly packageDir: string;
-  private readonly accessToken: string | undefined;
 
   constructor() {
     this.platform = this.getPlatform();
@@ -35,7 +34,6 @@ class TxgCliManager {
     const __dirname = path.dirname(__filename);
     // Go up from build/server/txg-cli-manager.js to package root
     this.packageDir = path.join(__dirname, "..");
-    this.accessToken = process.env.ACCESS_TOKEN;
     this.txgPath = this.findBundledBinary();
   }
 
@@ -108,12 +106,8 @@ class TxgCliManager {
     }
 
     return new Promise((resolve, reject) => {
-      // Build full command array with access token if available
+      // Build full command array
       const fullArgs = [...args];
-      if (this.accessToken) {
-        fullArgs.push("--access-token", this.accessToken);
-      }
-
       fullArgs.push("--tags", "mcpb");
 
       const fullCommand = `${this.txgPath} ${fullArgs.join(" ")}`;
@@ -125,6 +119,7 @@ class TxgCliManager {
 
       const child = spawn(this.txgPath, fullArgs, {
         timeout: timeout,
+        env: process.env,
       });
 
       let stdout = "";
