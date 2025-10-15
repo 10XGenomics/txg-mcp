@@ -110,7 +110,6 @@ describe("Command Building Tests", () => {
         "sample_S1_L001_R1_001.fastq.gz",
         "--project-id",
         "project_123",
-        "--assumeyes",
         "--wait-completion=false",
       );
     });
@@ -277,7 +276,6 @@ describe("Command Building Tests", () => {
         "--project-id",
         "project_789",
         "/data/fastqs/",
-        "--assumeyes",
       );
     });
 
@@ -303,13 +301,12 @@ describe("Command Building Tests", () => {
         "--project-id",
         "project_123",
         "/data/reference.csv",
-        "--assumeyes",
       );
     });
   });
 
   describe("List Commands", () => {
-    it("should include --assumeyes for list commands", async () => {
+    it("should run projects list command", async () => {
       mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
 
       await toolHandler({
@@ -321,7 +318,7 @@ describe("Command Building Tests", () => {
 
       const command = mockRunCommand.mock.calls[0][0];
 
-      expect(command).toEqual(["projects", "list", "--assumeyes"]);
+      expect(command).toEqual(["projects", "list"]);
     });
 
     it("should handle list with filter parameters", async () => {
@@ -340,7 +337,6 @@ describe("Command Building Tests", () => {
 
       // list_analyses uses positional argument, not --project-id flag
       expect(command).toEqual(["analyses", "list", "project_123"]);
-      expect(command).not.toContain("--assumeyes");
     });
   });
 

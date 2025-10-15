@@ -74,7 +74,6 @@ export function registerTools(server: Server) {
           params.analysis_name,
           "--csv",
           params.csv_path,
-          "--assumeyes",
           "--wait-completion=false",
         ];
 
@@ -122,7 +121,6 @@ export function registerTools(server: Server) {
           params.analysis_name,
           "--transcriptome",
           params.transcriptome,
-          "--assumeyes",
           "--wait-completion=false",
         ];
 
@@ -189,7 +187,6 @@ export function registerTools(server: Server) {
           params.analysis_name,
           "--csv",
           params.csv_path,
-          "--assumeyes",
           "--wait-completion=false",
         ];
 
@@ -263,7 +260,6 @@ export function registerTools(server: Server) {
                 params.analysis_id,
                 "--target-dir",
                 params.output_path,
-                "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
               LONG_OPERATION_SOFT_TIMEOUT,
@@ -306,7 +302,6 @@ export function registerTools(server: Server) {
                 "--project-id",
                 params.project_id,
                 params.file_path,
-                "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
               LONG_OPERATION_SOFT_TIMEOUT,
@@ -370,7 +365,6 @@ export function registerTools(server: Server) {
                 "--project-id",
                 params.project_id,
                 params.file_path,
-                "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
               LONG_OPERATION_SOFT_TIMEOUT,
@@ -397,7 +391,6 @@ export function registerTools(server: Server) {
                 params.file_id,
                 "--target-dir",
                 params.output_path,
-                "--assumeyes",
               ],
               LONG_OPERATION_TIMEOUT,
               LONG_OPERATION_SOFT_TIMEOUT,
@@ -409,9 +402,7 @@ export function registerTools(server: Server) {
       // --- Project Management Tools ---
       case "list_projects":
         return wrapResponse(
-          toResponse(
-            await txgCli.runCommand(["projects", "list", "--assumeyes"]),
-          ),
+          toResponse(await txgCli.runCommand(["projects", "list"])),
         );
 
       case "create_project": {
@@ -420,13 +411,7 @@ export function registerTools(server: Server) {
           description: z.string().optional(),
         });
         const params = schema.parse(args);
-        const command = [
-          "projects",
-          "create",
-          "--name",
-          params.name,
-          "--assumeyes",
-        ];
+        const command = ["projects", "create", "--name", params.name];
         if (params.description) {
           command.push("--description", params.description);
         }
@@ -441,12 +426,7 @@ export function registerTools(server: Server) {
           description: z.string().optional(),
         });
         const params = schema.parse(args);
-        const command = [
-          "projects",
-          "update",
-          params.project_id,
-          "--assumeyes",
-        ];
+        const command = ["projects", "update", params.project_id];
         if (params.name) {
           command.push("--name", params.name);
         }
@@ -488,12 +468,7 @@ export function registerTools(server: Server) {
           organism: z.string().optional(),
         });
         const params = schema.parse(args);
-        const command = [
-          "references",
-          "update",
-          params.reference_id,
-          "--assumeyes",
-        ];
+        const command = ["references", "update", params.reference_id];
         if (params.name) {
           command.push("--name", params.name);
         }
@@ -516,14 +491,7 @@ export function registerTools(server: Server) {
         return wrapResponse(
           toResponse(
             await txgCli.runCommand(
-              [
-                "references",
-                "upload",
-                params.file_path,
-                "--name",
-                params.name,
-                "--assumeyes",
-              ],
+              ["references", "upload", params.file_path, "--name", params.name],
               LONG_OPERATION_TIMEOUT,
               LONG_OPERATION_SOFT_TIMEOUT,
             ),
