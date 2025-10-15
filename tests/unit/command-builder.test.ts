@@ -176,6 +176,64 @@ describe("Command Building Tests", () => {
       expect(command).not.toContain("--project-name");
       expect(command).not.toContain("ignored_name");
     });
+
+    it("should handle new optional parameters (force_cells, create_bam, nosecondary, r1_length, r2_length)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test_analysis",
+            transcriptome: "GRCh38",
+            fastqs: ["sample.fastq.gz"],
+            project_id: "project_123",
+            force_cells: 5000,
+            create_bam: false,
+            nosecondary: true,
+            r1_length: 28,
+            r2_length: 91,
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+
+      assertCommandContains(
+        command,
+        "--force-cells",
+        "5000",
+        "--create-bam=false",
+        "--nosecondary",
+        "--r1-length",
+        "28",
+        "--r2-length",
+        "91",
+      );
+
+      // Should not contain expect_cells since force_cells is used
+      expect(command).not.toContain("--expect-cells");
+    });
+
+    it("should handle create_bam=true", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test",
+            transcriptome: "GRCh38",
+            fastqs: ["test.fastq.gz"],
+            project_id: "proj_123",
+            create_bam: true,
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+      expect(command).toContain("--create-bam=true");
+    });
   });
 
   describe("Cell Ranger Multi Analysis", () => {
