@@ -667,5 +667,37 @@ describe("Command Building Tests", () => {
       expect(command).toContain("test with spaces & special!");
       expect(command).toContain("file with spaces.fastq.gz");
     });
+
+    it("should handle numeric parameters passed as strings (LLM defensive)", async () => {
+      mockRunCommand.mockResolvedValue(DUMMY_RESPONSE);
+
+      await toolHandler({
+        params: {
+          name: "create_cellranger_count_analysis",
+          arguments: {
+            analysis_name: "test",
+            transcriptome: "GRCh38",
+            fastqs: ["test.fastq.gz"],
+            project_id: "proj_123",
+            expect_cells: "1000", // String instead of number
+            r1_length: "28", // String instead of number
+            r2_length: "91", // String instead of number
+          },
+        },
+      } as any);
+
+      const command = mockRunCommand.mock.calls[0][0];
+
+      // Should correctly convert strings to numbers
+      assertCommandContains(
+        command,
+        "--expect-cells",
+        "1000",
+        "--r1-length",
+        "28",
+        "--r2-length",
+        "91",
+      );
+    });
   });
 });
