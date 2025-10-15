@@ -326,13 +326,7 @@ export const TOOL_DEFINITIONS = [
       "List all available FASTQ library types. Returns both user-friendly names (TEXT) and internal identifiers (NAME) for each library type.",
     inputSchema: {
       type: "object",
-      properties: {
-        project_id: {
-          type: "string",
-          description: "Project ID to list libraries from",
-        },
-      },
-      required: ["project_id"],
+      properties: {},
     },
     annotations: {
       readOnlyHint: true,
