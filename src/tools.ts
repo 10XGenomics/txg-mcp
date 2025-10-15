@@ -102,15 +102,23 @@ export function registerTools(server: Server) {
             .describe("List of FASTQ file paths or IDs"),
           project_id: z.string().optional(),
           project_name: z.string().optional(),
-          expect_cells: z.number().optional(),
-          force_cells: z.number().optional(),
+          expect_cells: z
+            .union([z.number(), z.string().transform((v) => parseInt(v, 10))])
+            .optional(),
+          force_cells: z
+            .union([z.number(), z.string().transform((v) => parseInt(v, 10))])
+            .optional(),
           chemistry: z.string().optional().default("auto"),
           include_introns: z.union([z.string(), z.boolean()]).optional(),
           cell_annotation_model: z.string().optional(),
           create_bam: z.union([z.string(), z.boolean()]).optional(),
           nosecondary: z.union([z.string(), z.boolean()]).optional(),
-          r1_length: z.number().optional(),
-          r2_length: z.number().optional(),
+          r1_length: z
+            .union([z.number(), z.string().transform((v) => parseInt(v, 10))])
+            .optional(),
+          r2_length: z
+            .union([z.number(), z.string().transform((v) => parseInt(v, 10))])
+            .optional(),
           accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
