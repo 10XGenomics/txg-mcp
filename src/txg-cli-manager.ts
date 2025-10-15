@@ -108,6 +108,7 @@ class TxgCliManager {
     return new Promise((resolve, reject) => {
       // Build full command array
       const fullArgs = [...args];
+      fullArgs.push("--assumeyes");
       fullArgs.push("--tags", "mcpb");
 
       const fullCommand = `${this.txgPath} ${fullArgs.join(" ")}`;
