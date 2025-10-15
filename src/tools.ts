@@ -105,6 +105,8 @@ export function registerTools(server: Server) {
           project_name: z.string().optional(),
           expect_cells: z.number().optional(),
           chemistry: z.string().optional().default("auto"),
+          include_introns: z.union([z.string(), z.boolean()]).optional(),
+          cell_annotation_model: z.string().optional(),
           accept_payment: z.union([z.string(), z.boolean()]).optional(),
         });
 
@@ -137,6 +139,24 @@ export function registerTools(server: Server) {
         }
         if (params.chemistry) {
           command.push("--chemistry", params.chemistry);
+        }
+        if (params.include_introns !== undefined) {
+          if (
+            params.include_introns === true ||
+            params.include_introns === "true" ||
+            params.include_introns === "yes"
+          ) {
+            command.push("--include-introns=true");
+          } else if (
+            params.include_introns === false ||
+            params.include_introns === "false" ||
+            params.include_introns === "no"
+          ) {
+            command.push("--include-introns=false");
+          }
+        }
+        if (params.cell_annotation_model) {
+          command.push("--cell-annotation-model", params.cell_annotation_model);
         }
 
         addAcceptPaymentFlag(command, params.accept_payment);
