@@ -24,7 +24,7 @@ export function getAggrCsvConfigSpec() {
         notes: [
           "Must reference a completed analysis",
           "Use 'list_analyses' tool to find analysis IDs",
-          "All analyses must use the same reference transcriptome",
+          "All analyses must use the same references",
         ],
       },
     },
