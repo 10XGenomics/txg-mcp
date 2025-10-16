@@ -1,7 +1,7 @@
 {
   "server_info": {
     "name": "10x-genomics",
-    "version": "1.0.0"
+    "version": "1.0.1"
   },
   "protocol_version": "2024-11-05",
   "capabilities": {
@@ -265,6 +265,17 @@
       }
     },
     {
+      "name": "get_aggr_csv_config_spec",
+      "description": "Get the CSV configuration specification for Cell Ranger aggr (aggregation) analysis. IMPORTANT: Always use this tool BEFORE creating a csv file to use with aggr analysis to understand the correct CSV format for 10x Cloud. Returns detailed format requirements, field descriptions, and examples",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    },
+    {
       "name": "create_cellranger_aggr_analysis",
       "description": "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. CRITICAL: Always explicitly confirm parameters before creating analysis (can be expensive, long-running compute). Ask about experimental setup, explain parameter choices, show final parameters in table, and ASK 'Please review and confirm these parameters before I create the analysis.'",
       "inputSchema": {
@@ -276,7 +287,7 @@
           },
           "csv_path": {
             "type": "string",
-            "description": "Path to CSV file listing the analysis IDs to aggregate"
+            "description": "Path to aggr config CSV file. CRITICAL: if you need to generate the file, you must use 'get_aggr_csv_config_spec' tool to get the correct format specification and examples."
           },
           "project_id": {
             "anyOf": [

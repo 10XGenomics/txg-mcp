@@ -188,6 +188,18 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
+    name: "get_aggr_csv_config_spec",
+    description:
+      "Get the CSV configuration specification for Cell Ranger aggr (aggregation) analysis. IMPORTANT: Always use this tool BEFORE creating a csv file to use with aggr analysis to understand the correct CSV format for 10x Cloud. Returns detailed format requirements, field descriptions, and examples",
+    inputSchema: {
+      type: "object",
+      properties: {},
+    },
+    annotations: {
+      readOnlyHint: true,
+    },
+  },
+  {
     name: "create_cellranger_aggr_analysis",
     description:
       "Creates a new Cell Ranger 'aggr' analysis to aggregate multiple runs. " +
@@ -201,7 +213,8 @@ export const TOOL_DEFINITIONS = [
         },
         csv_path: {
           type: "string",
-          description: "Path to CSV file listing the analysis IDs to aggregate",
+          description:
+            "Path to aggr config CSV file. CRITICAL: if you need to generate the file, you must use 'get_aggr_csv_config_spec' tool to get the correct format specification and examples.",
         },
         project_id: {
           anyOf: [{ type: "string" }, { type: "null" }],

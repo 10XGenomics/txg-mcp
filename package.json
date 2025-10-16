@@ -12,7 +12,7 @@
     "fix": "npm run lint:fix && npm run format:fix",
     "format": "prettier . --cache --cache-location ./.cache/.prettier-cache --check",
     "format:fix": "prettier . --cache --cache-location ./.cache/.prettier-cache --write",
-    "generate-capabilities": "npm run build &&./tasks.sh generate-capabilities",
+    "generate-capabilities": "npm run build:prod &&./tasks.sh generate-capabilities",
     "lint": "eslint --cache --cache-location ./.cache/.eslint-cache",
     "lint:fix": "eslint --cache --cache-location ./.cache/.eslint-cache --fix",
     "pack": "./tasks.sh pack",
