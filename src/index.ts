@@ -16,7 +16,7 @@ export function createServer() {
   const server = new Server(
     {
       name: "10x-genomics",
-      version: "1.0.0",
+      version: "1.0.1",
     },
     {
       capabilities: {

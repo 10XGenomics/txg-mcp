@@ -700,4 +700,52 @@ describe("Command Building Tests", () => {
       );
     });
   });
+
+  describe("CSV Specification Tools", () => {
+    it("should return multi CSV specification as JSON", async () => {
+      const result = await toolHandler({
+        params: {
+          name: "get_multi_csv_config_spec",
+          arguments: {},
+        },
+      } as any);
+
+      // Should return content array with text
+      expect(result.content).toBeDefined();
+      expect(result.content.length).toBe(1);
+      expect(result.content[0].type).toBe("text");
+
+      // Should be valid JSON
+      const spec = JSON.parse(result.content[0].text);
+      expect(spec).toBeDefined();
+      expect(spec.format).toBeDefined();
+      expect(spec.sections).toBeDefined();
+      expect(spec.examples).toBeDefined();
+    });
+
+    it("should return aggr CSV specification as JSON", async () => {
+      const result = await toolHandler({
+        params: {
+          name: "get_aggr_csv_config_spec",
+          arguments: {},
+        },
+      } as any);
+
+      // Should return content array with text
+      expect(result.content).toBeDefined();
+      expect(result.content.length).toBe(1);
+      expect(result.content[0].type).toBe("text");
+
+      // Should be valid JSON
+      const spec = JSON.parse(result.content[0].text);
+      expect(spec).toBeDefined();
+      expect(spec.format).toBe("Cell Ranger aggr config CSV for 10x Cloud");
+      expect(spec.columns).toBeDefined();
+      expect(spec.columns.sample_id).toBeDefined();
+      expect(spec.columns.molecule_h5).toBeDefined();
+      expect(spec.rules).toBeDefined();
+      expect(spec.examples).toBeDefined();
+      expect(spec.examples.basic_aggr).toBeDefined();
+    });
+  });
 });

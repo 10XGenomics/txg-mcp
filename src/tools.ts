@@ -8,6 +8,7 @@ import {
 } from "./txg-cli-manager.js";
 import { toResponse, toAnalysisResponse, wrapResponse } from "./middleware.js";
 import { getMultiCsvConfigSpec } from "./multi-csv-spec.js";
+import { getAggrCsvConfigSpec } from "./aggr-csv-spec.js";
 
 /**
  * Add payment acceptance flag to command.
@@ -42,6 +43,18 @@ export function registerTools(server: Server) {
       // --- Analysis Tools ---
       case "get_multi_csv_config_spec": {
         const spec = getMultiCsvConfigSpec();
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(spec, null, 2),
+            },
+          ],
+        };
+      }
+
+      case "get_aggr_csv_config_spec": {
+        const spec = getAggrCsvConfigSpec();
         return {
           content: [
             {
