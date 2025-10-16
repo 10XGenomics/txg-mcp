@@ -12,7 +12,7 @@ export function getAggrCsvConfigSpec() {
         example: "Sample1",
         notes: [
           "For count analysis, there is only one sample and its ID is the analysis name.",
-          "For multi analyses, there can be multiple samples and the ID can be inferred from the analysis files. e.g. For this file: per_sample_outs\\Sample2\\count\\sample_cloupe.cloupe the sample_id would be Sample2.",
+          "For multi analyses, there can be multiple samples and the ID can be inferred from the analysis files. e.g. For this file: per_sample_outs\\Sample2\\count\\sample_cloupe.cloupe the sample_id would be Sample2. Note you must use 'Sample2' without modifications such as changing case or adding prefixes. Sample names do not need to be unique across analyses.",
         ],
       },
       molecule_h5: {
