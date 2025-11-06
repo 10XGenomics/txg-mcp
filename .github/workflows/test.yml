@@ -37,6 +37,12 @@ jobs:
       - name: Build project
         run: |
           npm run build
+          ./tasks.sh prepare-build
+
+      - name: Validate MCP Server
+        run: |
+          npm install -g @anthropic-ai/mcpb
+          mcpb validate build
 
       - name: Run tests
         env:
