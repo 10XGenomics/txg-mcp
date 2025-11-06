@@ -1,6 +1,6 @@
 {
   "name": "10x-genomics-mcp",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "10x Genomics Cloud MCP Server",
   "type": "module",
   "main": "server/index.js",

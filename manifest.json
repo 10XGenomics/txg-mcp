@@ -2,7 +2,7 @@
   "dxt_version": "0.2",
   "name": "10x Genomics",
   "display_name": "10x Genomics Cloud",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Interact with 10x Genomics Cloud platform",
   "long_description": "This extension enables Claude to interact with 10x Genomics Cloud platform, allowing users to launch, monitor, and manage single-cell analysis pipelines directly through conversation. Users can execute Cell Ranger analysis, upload data, track pipeline progress, retrieve results, and perform quality control checks.",
   "author": {
@@ -51,6 +51,7 @@
     "computational-biology"
   ],
   "license": "MIT",
+  "documentation": "https://www.10xgenomics.com/support/software/cloud-analysis/latest/tutorials/cloud-mcp-server",
   "privacy_policies": ["https://www.10xgenomics.com/legal/privacy-policy"],
   "compatibility": {
     "claude_desktop": ">=0.10.0",

@@ -1,7 +1,7 @@
 {
   "server_info": {
     "name": "10x-genomics",
-    "version": "1.0.1"
+    "version": "1.0.2"
   },
   "protocol_version": "2024-11-05",
   "capabilities": {
