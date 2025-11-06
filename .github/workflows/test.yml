@@ -38,6 +38,11 @@ jobs:
         run: |
           npm run build
 
+      - name: Validate MCP Server
+        run: |
+          npm install -g @anthropic-ai/mcpb
+          mcpb validate build
+
       - name: Run tests
         env:
           TXG_CLI_ACCESS_TOKEN: test_token_for_ci
