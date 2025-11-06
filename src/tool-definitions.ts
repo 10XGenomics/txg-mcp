@@ -9,7 +9,7 @@ const ACCEPT_PAYMENT_PARAMETER = {
   anyOf: [{ type: "string" }, { type: "null" }],
   default: null,
   description:
-    'CRITICAL: Do NOT set to "true" unless user has EXPLICITLY confirmed they accept the charges. When set to "false", omitted, or any other value, the command will fail with a cost estimate if payment is required. Only set to "true" after user explicitly agrees to the charges shown in the error message.',
+    'CRITICAL: Always omit this parameter on first attempt as most analyses do not require payment. ONLY set to "true" when: (1) analysis creation failed with payment error, (2) you showed the user the cost, (3) user explicitly confirmed. Never preemptively ask about payment.',
 };
 
 export const TOOL_DEFINITIONS = [
