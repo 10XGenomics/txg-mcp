@@ -37,6 +37,7 @@ jobs:
       - name: Build project
         run: |
           npm run build
+          ./tasks.sh prepare-build
 
       - name: Validate MCP Server
         run: |

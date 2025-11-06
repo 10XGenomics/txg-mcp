@@ -75,15 +75,14 @@ run_server() {
     TXG_CLI_ACCESS_TOKEN="$access_token" node build/server/index.js
 }
 
-# Create MCP bundle
-pack() {
-    print_info "Creating MCP bundle..."
+# Prepare build folder for validation (without bin files or bundling)
+prepare_build() {
+    print_info "Preparing build folder for validation..."
 
     cd "$SCRIPT_DIR"
 
     # Ensure build directory exists
     mkdir -p build
-
 
     # Copy required assets to build folder
     print_info "Copying assets to build folder..."
@@ -94,7 +93,6 @@ pack() {
         print_success "Copied icon.png"
     else
         print_warning "assets/icon.png not found"
-        return 1
     fi
 
     # Copy package.json
@@ -131,6 +129,32 @@ pack() {
         print_warning "LICENSE not found"
     fi
 
+    # Check that server folder exists and is non-empty
+    if [[ -d "build/server" ]]; then
+        if [[ -n "$(ls -A build/server 2>/dev/null)" ]]; then
+            print_success "server folder exists and is non-empty"
+        else
+            print_error "build/server folder is empty"
+            return 1
+        fi
+    else
+        print_error "build/server folder not found"
+        print_info "Run 'npm run build' first"
+        return 1
+    fi
+
+    print_success "Build folder prepared for validation"
+}
+
+# Create MCP bundle
+pack() {
+    print_info "Creating MCP bundle..."
+
+    cd "$SCRIPT_DIR"
+
+    # Prepare build folder (copy assets and validate server folder)
+    prepare_build || return 1
+
     # Check that bin folder exists and is non-empty
     if [[ -d "build/bin" ]]; then
         if [[ -n "$(ls -A build/bin 2>/dev/null)" ]]; then
@@ -143,19 +167,6 @@ pack() {
     else
         print_error "build/bin folder not found"
         print_info "Run './tasks.sh download-bin' to download TXG CLI binaries"
-        return 1
-    fi
-
-    # Check that server folder exists and is non-empty
-    if [[ -d "build/server" ]]; then
-        if [[ -n "$(ls -A build/server 2>/dev/null)" ]]; then
-            print_success "server folder exists and is non-empty"
-        else
-            print_error "build/server folder is empty"
-            return 1
-        fi
-    else
-        print_error "build/server folder not found"
         return 1
     fi
 
@@ -400,6 +411,7 @@ Usage: $0 <command> [options]
 
 Commands:
     download-bin [version]    Download TXG CLI binaries for all platforms
+    prepare-build             Prepare build folder for validation (copy assets)
     pack                      Create MCP bundle (.mcpb file)
     run-server [token]        Run the MCP server locally for testing
                               Optional: access token (saved to credentials.txt)
@@ -409,6 +421,7 @@ Commands:
     Examples:
     $0 download-bin            # Download latest version
     $0 download-bin v3.0.1     # Download specific version
+    $0 prepare-build           # Prepare build folder for validation
     $0 pack                    # Create .mcpb bundle
     $0 run-server              # Run server (uses saved token from credentials.txt)
     $0 run-server TOKEN123     # Run server with new token
@@ -425,6 +438,9 @@ main() {
     case "$command" in
         run-server)
             run_server "$@"
+            ;;
+        prepare-build)
+            prepare_build "$@"
             ;;
         pack)
             pack "$@"
